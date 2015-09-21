@@ -4,13 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ObjectBuilder {
+public class JSONObjectBuilder {
 	//takes in ResultSets and builds the objects associated with those results
 	public static JSONObject buildItemInfo(ResultSet rs){
 		JSONObject allItems = new JSONObject();
@@ -21,7 +24,7 @@ public class ObjectBuilder {
 			
 			while(rs != null && rs.next()){
 				String itemNo = rs.getString("ITEM_NO");
-				String attrType = rs.getString("ATTRIBUTE_TYPE");
+				String attrType = rs.getString("TYPE");
 				String value = rs.getString("VALUE");
 				
 				if(!currentItem.equalsIgnoreCase(itemNo)){
@@ -69,6 +72,7 @@ public class ObjectBuilder {
 	}
 	
 	//to do: generalize so that children can be added easily
+	//make last param of type Map<String,JSON> where key=attr name on product and value=info to add under that attr
 	public static JSONObject buildProducts(JSONObject products, Map<String,String> mappings, JSONObject items){
 		Iterator<String> itemKeys = items.keys();
 		Map<String,JSONArray> productItems = new HashMap<String,JSONArray>(); //to hold a list of all items for this product
@@ -102,5 +106,40 @@ public class ObjectBuilder {
 		}
 		
 		return products;
+	}
+	
+	public static JSONObject buildProducts(JSONObject products, Map<String,String> mappings, List<Pair<String,JSONObject>> children){
+		try{
+			for(Pair<String,JSONObject> child : children){
+				String childLabel = child.getLeft();
+				JSONObject childInfo = child.getRight();
+				Iterator<String> keys = childInfo.keys();
+				
+				while(keys.hasNext()){
+					String childItemNo = keys.next();
+					String parentItemNo = mappings.get(childItemNo);
+					
+					if(products.has(parentItemNo)){
+						JSONObject parentJson = products.getJSONObject(parentItemNo);
+						
+						if(parentJson.has(childLabel)){
+							JSONArray siblings = parentJson.getJSONArray(childLabel);
+							siblings.put(childInfo.get(childItemNo));
+							parentJson.put(childLabel, siblings);
+						}
+						else {
+							JSONArray childItems = new JSONArray();
+							childItems.put(childInfo.get(childItemNo));
+							parentJson.put(childLabel, childItems);
+						}
+					}
+				}
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return products;		
 	}
 }

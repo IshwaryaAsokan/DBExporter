@@ -6,19 +6,21 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import definitions.Business;
+
 public class ConnectionService {
 	
 	static Properties properties = new Properties();
 	static InputStream input;
 	
-	public static Connection getConnection(String business){ //if this program is expanded create an enum for business
+	public static Connection getConnection(Business business){ //if this program is expanded create an enum for business
 		try {
 			input = new FileInputStream("src/connection/connection.properties");
 			properties.load(input);
 
-			String connectionString = properties.getProperty(business + ".connection.string");
-			String user = properties.getProperty(business + ".connection.username");
-			String password = properties.getProperty(business + ".connection.password");
+			String connectionString = properties.getProperty(business.toString() + ".connection.string");
+			String user = properties.getProperty(business.toString() + ".connection.username");
+			String password = properties.getProperty(business.toString() + ".connection.password");
 		
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection connection = DriverManager.getConnection(connectionString, user, password);	

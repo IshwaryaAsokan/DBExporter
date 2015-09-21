@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_51"/>
 	<classpathentry kind="lib" path="src/lib/ojdbc14-1.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/org.json-20120521.jar"/>
+	<classpathentry kind="lib" path="src/lib/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="src/lib/jxl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
