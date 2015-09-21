@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,43 +67,6 @@ public class JSONObjectBuilder {
 		}
 		
 		return mappings;
-	}
-	
-	//to do: generalize so that children can be added easily
-	//make last param of type Map<String,JSON> where key=attr name on product and value=info to add under that attr
-	public static JSONObject buildProducts(JSONObject products, Map<String,String> mappings, JSONObject items){
-		Iterator<String> itemKeys = items.keys();
-		Map<String,JSONArray> productItems = new HashMap<String,JSONArray>(); //to hold a list of all items for this product
-		
-		try {
-			//iterate through all items, adding them to the array of items that belong to their product
-			while(itemKeys.hasNext()){
-				String itemKey = itemKeys.next(); //an item_no
-				String productKey = mappings.get(itemKey); //a product item_no
-				
-				JSONArray currentProductItems = productItems.get(productKey);
-				if(currentProductItems == null){
-					currentProductItems = new JSONArray();
-				}
-				
-				currentProductItems.put(items.get(itemKey));
-				productItems.put(productKey, currentProductItems);
-			}
-			
-			//iterate through all lists of items, associating them with their products
-			Set<String> productItemNumbers = productItems.keySet();
-			for(String productItemNo : productItemNumbers){
-				JSONObject productInfo = (JSONObject) products.get(productItemNo);
-				productInfo.put("skus", productItems.get(productItemNo));
-				products.put(productItemNo, productInfo);
-			}
-			
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return products;
 	}
 	
 	public static JSONObject buildProducts(JSONObject products, Map<String,String> mappings, List<Pair<String,JSONObject>> children){
