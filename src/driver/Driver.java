@@ -1,5 +1,6 @@
 package driver;
 
+import io.ExcelOutputData;
 import io.OutputWriter;
 
 import java.sql.Connection;
@@ -8,9 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import sql.SqlService;
@@ -18,6 +17,7 @@ import connection.ConnectionService;
 import data.DataBuilder;
 import data.JSONObjectBuilder;
 import definitions.Business;
+import definitions.ExcelOutputFormat;
 import definitions.OutputFormat;
 
 public class Driver {
@@ -37,7 +37,7 @@ public class Driver {
 		JSONObject crossSellingJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/cross-selling.sql"));
 		JSONObject keywordsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/keywords.sql"));
 
-		if(format == OutputFormat.JSON){			
+		if(format == OutputFormat.JSON){
 			//get parent/child mapping
 			Map<String,String> mappings = JSONObjectBuilder.mapItemsToProducts(SqlService.getResults(connection, "src/sql/" + business.toString() + "/parent-child.sql"));
 			
@@ -58,16 +58,17 @@ public class Driver {
 			List<String> crossSellingTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/cross-selling-types.sql");
 			List<String> keywordTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/keyword-types.sql");
 			
-			//build excel sheets: Triple.of("Sheet Name", products, columns)
-			List<Triple<String,JSONObject,List<String>>> sheets = new ArrayList<Triple<String,JSONObject,List<String>>>();
-			sheets.add(Triple.of("Products", productsJson, productAttrTypesList));
-			sheets.add(Triple.of("Items", itemsJson, itemAttrTypesList));
-			sheets.add(Triple.of("Ad Copy", adCopyJson, adCopyTypesList));
-			sheets.add(Triple.of("Cross Selling", crossSellingJson, crossSellingTypesList));
-			sheets.add(Triple.of("Keywords", keywordsJson, keywordTypesList));
+			//build excel sheets
+			List<ExcelOutputData> excelOutput = new ArrayList<ExcelOutputData>();
+			
+			excelOutput.add(new ExcelOutputData("Products", productsJson, productAttrTypesList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Items", itemsJson, itemAttrTypesList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Ad Copy", adCopyJson, adCopyTypesList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Cross Selling", crossSellingJson, crossSellingTypesList, ExcelOutputFormat.EAV));
+			excelOutput.add(new ExcelOutputData("Keywords", keywordsJson, keywordTypesList, ExcelOutputFormat.TABLE));
 			
 			//output results
-			OutputWriter.writeResult(sheets, business, format);
+			OutputWriter.writeResult(excelOutput, business, format);
 		}
 
 		//close connection

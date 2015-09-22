@@ -41,7 +41,7 @@ public class JSONObjectBuilder {
 				}
 				
 				if(currentItemObj.has(attrType) && currentItemObj.get(attrType) != null){
-					String newVal = currentItemObj.get(attrType).toString() + " " + value;
+					String newVal = currentItemObj.get(attrType).toString() + "|" + value;
 					currentItemObj.put(attrType, newVal);
 				}
 				else { //if > 1 val we need to append to existing val
