@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,19 +71,20 @@ public class JSONObjectBuilder {
 		return mappings;
 	}
 	
-	public static JSONObject buildProducts(JSONObject products, Map<String,String> mappings, List<Pair<String,JSONObject>> children){
+	public static JSONObject buildProducts(JSONObject products, Map<String,String> mappings, List<Triple<String,JSONObject,Boolean>> children){
 		try{
-			for(Pair<String,JSONObject> child : children){
+			for(Triple<String,JSONObject,Boolean> child : children){
 				String childLabel = child.getLeft();
-				JSONObject childInfo = child.getRight();
+				JSONObject childInfo = child.getMiddle();
+				Boolean mapToParent = child.getRight();
 				Iterator<String> keys = childInfo.keys();
 				
 				while(keys.hasNext()){
-					String childItemNo = keys.next();
-					String parentItemNo = mappings.get(childItemNo);
+					String childItemNo = keys.next();					
+					String attachInfoTo = mapToParent ? mappings.get(childItemNo) : childItemNo;
 					
-					if(products.has(parentItemNo)){
-						JSONObject parentJson = products.getJSONObject(parentItemNo);
+					if(products.has(attachInfoTo)){
+						JSONObject parentJson = products.getJSONObject(attachInfoTo);
 						
 						if(parentJson.has(childLabel)){
 							JSONArray siblings = parentJson.getJSONArray(childLabel);

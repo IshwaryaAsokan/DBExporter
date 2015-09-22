@@ -10,7 +10,6 @@ import java.sql.Statement;
 
 public class SqlService {
 	public static String getSqlFile(String fileLocation){
-		System.out.println("File location: " + fileLocation);
 		try {
 			return new String(Files.readAllBytes(Paths.get(fileLocation)));
 		} catch (IOException e) {
@@ -21,18 +20,21 @@ public class SqlService {
 	}
 	
 	public static ResultSet getResults(Connection connection, String fileLocation){
-		String sql = getSqlFile(fileLocation);
-		System.out.println("Executing SQL: " + sql);
+		String sql = getSqlFile(fileLocation);		
 		
-		Statement statement;
-		try {
-			statement = connection.createStatement();
-			statement.execute(sql);
-			return statement.getResultSet();
-		} catch (SQLException e) {
-			System.out.println("Error executing SQL: " + sql);
-			e.printStackTrace();
+		if(sql != null){
+			Statement statement;
+			
+			try {
+				statement = connection.createStatement();
+				statement.execute(sql);
+				return statement.getResultSet();
+			} catch (SQLException e) {
+				System.out.println("Error executing SQL: " + sql);
+				e.printStackTrace();
+			}						
 		}
+				
 		return null;
 	}
 }
