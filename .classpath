@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="src/lib/org.json-20120521.jar"/>
 	<classpathentry kind="lib" path="src/lib/commons-lang3-3.4.jar"/>
 	<classpathentry kind="lib" path="src/lib/jxl.jar"/>
+	<classpathentry kind="lib" path="src/lib/poi-3.12-20150511.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,19 +1,16 @@
 package io;
 
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
-import jxl.*;
-import jxl.write.*;
-import jxl.write.biff.RowsExceededException;
-
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import definitions.Business;
 import definitions.ExcelOutputFormat;
 import definitions.OutputFormat;
@@ -44,40 +41,41 @@ public class OutputWriter {
 	}
 	
 	public static void writeResult(List<ExcelOutputData> excelOutput, Business business, OutputFormat format){
-		//format of Triple: tab name, items to output, list of all attributes		
 	    try {
-	    	WritableWorkbook wworkbook;
-			wworkbook = Workbook.createWorkbook(new File(FILE_LOCATION_ROOT + business.toString() + "." + format.toString()));
-			int worksheetIndex = 0;
+			Workbook wb = new HSSFWorkbook();
+			FileOutputStream fileOut = new FileOutputStream(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			
 			for(ExcelOutputData sheet : excelOutput){
 				String tabName = (String) sheet.getSheetName();
 				JSONObject data = (JSONObject) sheet.getData();
 				List<String> attrs = (List<String>) sheet.getTypes();
 				ExcelOutputFormat excelFormat = sheet.getExcelFormat();
-				
-				WritableSheet wsheet = wworkbook.createSheet(tabName, worksheetIndex);
+				Sheet currentSheet = wb.createSheet(tabName);
 				
 				if(excelFormat == ExcelOutputFormat.TABLE){
 					int columnIndex = 0;
-					int rowIndex = 0;
+					
 					//output attributes across top before marching through objects!
+					Row row = currentSheet.createRow(0);
 					for(String attr : attrs){
-						wsheet.addCell(new Label(columnIndex, rowIndex, attr)); 
+						//wsheet.addCell(new Label(columnIndex, 0, attr)); 
+						row.createCell(columnIndex).setCellValue(attr);
 						columnIndex++;
 					}
 					
-					rowIndex++;
+					int rowIndex = 1;
 					Iterator<String> iter = data.keys();
 					
 					while(iter.hasNext()){
 						String key = iter.next();
 						JSONObject obj = (JSONObject) data.get(key);
+						Row currentRow = currentSheet.createRow(rowIndex);
 						
 						columnIndex = 0;
 						for(String attr : attrs){			
 							if(obj.has(attr)){
-								wsheet.addCell(new Label(columnIndex, rowIndex, obj.getString(attr))); 
+								//wsheet.addCell(new Label(columnIndex, rowIndex, obj.getString(attr))); 
+								currentRow.createCell(columnIndex).setCellValue(attr);
 							}
 							columnIndex++;
 						}					
@@ -86,8 +84,6 @@ public class OutputWriter {
 				}
 				else if (excelFormat == ExcelOutputFormat.EAV){
 					Iterator<String> iter = data.keys();
-
-					//output headers
 					int rowIndex = 0;
 					
 					while(iter.hasNext()){
@@ -99,34 +95,26 @@ public class OutputWriter {
 								String[] values = obj.getString(attr).split("|");
 								
 								for(String value : values){
-									wsheet.addCell(new Label(0, rowIndex, key));
-									wsheet.addCell(new Label(1, rowIndex, attr));
-									wsheet.addCell(new Label(2, rowIndex, value));
-									System.out.println("Just wrote row: " + rowIndex);
+									Row currentRow = currentSheet.createRow(rowIndex);
+									currentRow.createCell(0).setCellValue(key);
+									currentRow.createCell(1).setCellValue(attr);
+									currentRow.createCell(2).setCellValue(value);
 									rowIndex++;
 								}
 							}
 						}
 					}
 				}
-
-				worksheetIndex++;
 			}
 			
-			wworkbook.write();
-			wworkbook.close();
+			wb.write(fileOut);
+		    fileOut.close();
 			
 		} catch (IOException e) {
 			System.out.println("Error writing excel sheet (output)");
 			e.printStackTrace();
 		} catch (JSONException e) {
 			System.out.println("Error writing excel sheet (json)");
-			e.printStackTrace();
-		} catch (RowsExceededException e) {
-			System.out.println("Error writing excel sheet (rows)");
-			e.printStackTrace();
-		} catch (WriteException e) {
-			System.out.println("Error writing excel sheet (write)");
 			e.printStackTrace();
 		}
 	}
