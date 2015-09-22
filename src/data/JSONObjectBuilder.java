@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class JSONObjectBuilder {
 	//takes in ResultSets and builds the objects associated with those results
 	public static JSONObject buildItemInfo(ResultSet rs){
-		JSONObject allItems = new JSONObject();
+		JSONObject allData = new JSONObject();
 		
 		try {
 			String currentItem = "";
@@ -31,7 +31,7 @@ public class JSONObjectBuilder {
 					//add previous object to output
 					if(currentItemObj != null){
 						String key = (String) currentItemObj.get("Item_No");
-						allItems.put(key, currentItemObj);
+						allData.put(key, currentItemObj);
 					}					
 					
 					//reset current to point to new item_no
@@ -40,7 +40,13 @@ public class JSONObjectBuilder {
 					currentItemObj.put("Item_No", itemNo);
 				}
 				
-				currentItemObj.put(attrType, value);
+				if(currentItemObj.has(attrType) && currentItemObj.get(attrType) != null){
+					String newVal = currentItemObj.get(attrType).toString() + " " + value;
+					currentItemObj.put(attrType, newVal);
+				}
+				else { //if > 1 val we need to append to existing val
+					currentItemObj.put(attrType, value);
+				}
 			}			
 		} catch (SQLException e) {
 			System.out.println("Error building SQL into data objects.");
@@ -50,7 +56,7 @@ public class JSONObjectBuilder {
 			e.printStackTrace();
 		}
 		
-		return allItems;
+		return allData;
 	}
 	
 	//takes in parent/child mappings and outputs a map where key=item, value=product

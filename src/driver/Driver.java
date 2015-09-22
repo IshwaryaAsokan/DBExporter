@@ -35,6 +35,7 @@ public class Driver {
 		JSONObject itemsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/all-item-attributes.sql"));
 		JSONObject adCopyJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/ad-copy.sql"));
 		JSONObject crossSellingJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/cross-selling.sql"));
+		JSONObject keywordsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/keywords.sql"));
 
 		if(format == OutputFormat.JSON){			
 			//get parent/child mapping
@@ -55,6 +56,7 @@ public class Driver {
 			List<String> itemAttrTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/all-item-attribute-types.sql");
 			List<String> adCopyTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/ad-copy-types.sql");
 			List<String> crossSellingTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/cross-selling-types.sql");
+			List<String> keywordTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/keyword-types.sql");
 			
 			//build excel sheets: Triple.of("Sheet Name", products, columns)
 			List<Triple<String,JSONObject,List<String>>> sheets = new ArrayList<Triple<String,JSONObject,List<String>>>();
@@ -62,6 +64,7 @@ public class Driver {
 			sheets.add(Triple.of("Items", itemsJson, itemAttrTypesList));
 			sheets.add(Triple.of("Ad Copy", adCopyJson, adCopyTypesList));
 			sheets.add(Triple.of("Cross Selling", crossSellingJson, crossSellingTypesList));
+			sheets.add(Triple.of("Keywords", keywordsJson, keywordTypesList));
 			
 			//output results
 			OutputWriter.writeResult(sheets, business, format);
