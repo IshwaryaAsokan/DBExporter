@@ -2,16 +2,13 @@ package driver;
 
 import io.ExcelOutputData;
 import io.OutputWriter;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONObject;
-
 import sql.SqlService;
 import connection.ConnectionService;
 import data.DataBuilder;
@@ -22,7 +19,7 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){		
-		runBuilder(Business.NBKR, OutputFormat.XLS);
+		runBuilder(Business.NBKR, OutputFormat.XLSX);
 	}	
 	
 	private static void runBuilder(Business business, OutputFormat format){

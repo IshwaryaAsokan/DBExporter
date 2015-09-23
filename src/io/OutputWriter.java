@@ -5,10 +5,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.JSONException;
 import org.json.JSONObject;
 import definitions.Business;
@@ -42,7 +42,7 @@ public class OutputWriter {
 	
 	public static void writeResult(List<ExcelOutputData> excelOutput, Business business, OutputFormat format){
 	    try {
-			Workbook wb = new HSSFWorkbook();
+			Workbook wb = new SXSSFWorkbook();
 			FileOutputStream fileOut = new FileOutputStream(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			
 			for(ExcelOutputData sheet : excelOutput){
@@ -54,11 +54,9 @@ public class OutputWriter {
 				
 				if(excelFormat == ExcelOutputFormat.TABLE){
 					int columnIndex = 0;
-					
-					//output attributes across top before marching through objects!
+										
 					Row row = currentSheet.createRow(0);
-					for(String attr : attrs){
-						//wsheet.addCell(new Label(columnIndex, 0, attr)); 
+					for(String attr : attrs){ //output attributes across top before marching through objects!
 						row.createCell(columnIndex).setCellValue(attr);
 						columnIndex++;
 					}
@@ -74,8 +72,7 @@ public class OutputWriter {
 						columnIndex = 0;
 						for(String attr : attrs){			
 							if(obj.has(attr)){
-								//wsheet.addCell(new Label(columnIndex, rowIndex, obj.getString(attr))); 
-								currentRow.createCell(columnIndex).setCellValue(attr);
+								currentRow.createCell(columnIndex).setCellValue(obj.getString(attr));
 							}
 							columnIndex++;
 						}					
@@ -92,7 +89,7 @@ public class OutputWriter {
 						
 						for(String attr : attrs){			
 							if(obj.has(attr)){
-								String[] values = obj.getString(attr).split("|");
+								String[] values = obj.getString(attr).split("\\|");
 								
 								for(String value : values){
 									Row currentRow = currentSheet.createRow(rowIndex);

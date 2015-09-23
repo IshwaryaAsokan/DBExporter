@@ -15,37 +15,32 @@ import org.json.JSONObject;
 
 public class JSONObjectBuilder {
 	//takes in ResultSets and builds the objects associated with those results
-	public static JSONObject buildItemInfo(ResultSet rs){
+	public static JSONObject buildItemInfo(ResultSet rs){		
 		JSONObject allData = new JSONObject();
 		
 		try {
-			String currentItem = "";
-			JSONObject currentItemObj = null;
-			
 			while(rs != null && rs.next()){
 				String itemNo = rs.getString("ITEM_NO");
 				String attrType = rs.getString("TYPE");
 				String value = rs.getString("VALUE");
-				
-				if(!currentItem.equalsIgnoreCase(itemNo)){
-					//add previous object to output
-					if(currentItemObj != null){
-						String key = (String) currentItemObj.get("Item_No");
-						allData.put(key, currentItemObj);
-					}					
-					
-					//reset current to point to new item_no
-					currentItem = itemNo;
-					currentItemObj = new JSONObject();
-					currentItemObj.put("Item_No", itemNo);
+										
+				if(allData.has(itemNo)){
+					JSONObject entry = allData.getJSONObject(itemNo);
+					if(entry.has(attrType) && entry.get(attrType) != null){
+						String newVal = entry.get(attrType).toString() + "|" + value;
+						entry.put(attrType, newVal);
+						allData.put(itemNo, entry);
+					}
+					else {
+						entry.put(attrType, value);
+						allData.put(itemNo, entry);
+					}
 				}
-				
-				if(currentItemObj.has(attrType) && currentItemObj.get(attrType) != null){
-					String newVal = currentItemObj.get(attrType).toString() + "|" + value;
-					currentItemObj.put(attrType, newVal);
-				}
-				else { //if > 1 val we need to append to existing val
-					currentItemObj.put(attrType, value);
+				else {
+					JSONObject newData = new JSONObject();
+					newData.put(attrType, value);
+					newData.put("Item_No", itemNo);
+					allData.put(itemNo, newData);
 				}
 			}			
 		} catch (SQLException e) {
