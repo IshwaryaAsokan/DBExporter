@@ -7,20 +7,36 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+
+import definitions.Business;
 
 public class SqlService {
-	public static String getSqlFile(String fileLocation){
+	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR"};
+	private final static String SQL_ROOT = "src/sql/";
+	private final static String PUNI_ROOT = "src/sql/parameterized/puni/";
+	
+	public static String getSqlFile(String fileName, Business business){
 		try {
-			return new String(Files.readAllBytes(Paths.get(fileLocation)));
+			if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
+				String fileLocation = PUNI_ROOT + fileName;
+				String sql = new String(Files.readAllBytes(Paths.get(fileLocation)));
+				sql = sql.replace("{{business}}", business.toString());
+				return sql;
+			}
+			else {
+				String fileLocation = SQL_ROOT + business.toString() + "/" + fileName;
+				return new String(Files.readAllBytes(Paths.get(fileLocation)));
+			}			
 		} catch (IOException e) {
-			System.out.println("Error reading: " + fileLocation);
+			System.out.println("Error reading: " + fileName);
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public static ResultSet getResults(Connection connection, String fileLocation){
-		String sql = getSqlFile(fileLocation);		
+	public static ResultSet getResults(Connection connection, String fileName, Business business){
+		String sql = getSqlFile(fileName, business);
 		
 		if(sql != null){
 			Statement statement;

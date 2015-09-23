@@ -6,11 +6,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import definitions.Business;
 import sql.SqlService;
 
 public class DataBuilder {
-	public static List<String> getAttributeTypes(Connection connection, String sqlLocation){
-		ResultSet rs = SqlService.getResults(connection, sqlLocation);
+	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business){
+		ResultSet rs = SqlService.getResults(connection, fileName, business);
 		return getAttributeTypes(rs);
 	}
 	

@@ -19,24 +19,24 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){		
-		runBuilder(Business.NBKR, OutputFormat.XLSX);
+		runBuilder(Business.ANNS, OutputFormat.XLSX);
 	}	
 	
 	private static void runBuilder(Business business, OutputFormat format){
 		Connection connection = ConnectionService.getConnection(business);
 
 		//build objects
-		JSONObject productsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/all-product-attributes.sql"));
+		JSONObject productsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "all-product-attributes.sql", business));
 
 		//build child items
-		JSONObject itemsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/all-item-attributes.sql"));
-		JSONObject adCopyJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/ad-copy.sql"));
-		JSONObject crossSellingJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/cross-selling.sql"));
-		JSONObject keywordsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "src/sql/" + business.toString() + "/keywords.sql"));
+		JSONObject itemsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "all-item-attributes.sql", business));
+		JSONObject adCopyJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "ad-copy.sql", business));
+		JSONObject crossSellingJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "cross-selling.sql", business));
+		JSONObject keywordsJson = JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "keywords.sql", business));
 
 		if(format == OutputFormat.JSON){
 			//get parent/child mapping
-			Map<String,String> mappings = JSONObjectBuilder.mapItemsToProducts(SqlService.getResults(connection, "src/sql/" + business.toString() + "/parent-child.sql"));
+			Map<String,String> mappings = JSONObjectBuilder.mapItemsToProducts(SqlService.getResults(connection, "parent-child.sql", business));
 			
 			//build json objects: Triple.of("attribute name", data, attachInfoToParent)
 			List<Triple<String,JSONObject,Boolean>> children = new ArrayList<Triple<String,JSONObject,Boolean>>();
@@ -49,11 +49,11 @@ public class Driver {
 		}
 		else{ //xls
 			//get all attribute types
-			List<String> productAttrTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/all-product-attribute-types.sql");
-			List<String> itemAttrTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/all-item-attribute-types.sql");
-			List<String> adCopyTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/ad-copy-types.sql");
-			List<String> crossSellingTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/cross-selling-types.sql");
-			List<String> keywordTypesList = DataBuilder.getAttributeTypes(connection, "src/sql/" + business.toString() + "/keyword-types.sql");
+			List<String> productAttrTypesList = DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business);
+			List<String> itemAttrTypesList = DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business);
+			List<String> adCopyTypesList = DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business);
+			List<String> crossSellingTypesList = DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business);
+			List<String> keywordTypesList = DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business);
 			
 			//build excel sheets
 			List<ExcelOutputData> excelOutput = new ArrayList<ExcelOutputData>();

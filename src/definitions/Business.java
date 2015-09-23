@@ -1,5 +1,5 @@
 package definitions;
 
 public enum Business {
-	BAKR, KPNA, NBKR
+	BAKR, KPNA, NBKR, NKUK, ANNS, PORT
 }
