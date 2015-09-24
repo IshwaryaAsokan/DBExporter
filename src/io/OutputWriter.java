@@ -48,22 +48,20 @@ public class OutputWriter {
 			for(ExcelOutputData sheet : excelOutput){
 				String tabName = (String) sheet.getSheetName();
 				JSONObject data = (JSONObject) sheet.getData();
-				List<String> attrs = (List<String>) sheet.getTypes();
+				List<String> attrs = (List<String>) sheet.getHeaders();
 				ExcelOutputFormat excelFormat = sheet.getExcelFormat();
 				Sheet currentSheet = wb.createSheet(tabName);
 				
+				int columnIndex = 0;										
+				Row row = currentSheet.createRow(0);
+				for(String header : sheet.getHeaders()){ //output attributes across top before marching through objects!
+					row.createCell(columnIndex).setCellValue(header);
+					columnIndex++;
+				}
+				int rowIndex = 1;
+				Iterator<String> iter = data.keys();
+				
 				if(excelFormat == ExcelOutputFormat.TABLE){
-					int columnIndex = 0;
-										
-					Row row = currentSheet.createRow(0);
-					for(String attr : attrs){ //output attributes across top before marching through objects!
-						row.createCell(columnIndex).setCellValue(attr);
-						columnIndex++;
-					}
-					
-					int rowIndex = 1;
-					Iterator<String> iter = data.keys();
-					
 					while(iter.hasNext()){
 						String key = iter.next();
 						JSONObject obj = (JSONObject) data.get(key);
@@ -80,23 +78,22 @@ public class OutputWriter {
 					}
 				}
 				else if (excelFormat == ExcelOutputFormat.EAV){
-					Iterator<String> iter = data.keys();
-					int rowIndex = 0;
-					
 					while(iter.hasNext()){
 						String key = iter.next(); //item_no
 						JSONObject obj = (JSONObject) data.get(key);
 						
-						for(String attr : attrs){			
+						for(String attr : sheet.getAttributes()){			
 							if(obj.has(attr)){
 								String[] values = obj.getString(attr).split("\\|");
 								
 								for(String value : values){
-									Row currentRow = currentSheet.createRow(rowIndex);
-									currentRow.createCell(0).setCellValue(key);
-									currentRow.createCell(1).setCellValue(attr);
-									currentRow.createCell(2).setCellValue(value);
-									rowIndex++;
+									if(!attr.equalsIgnoreCase("Item_No")){
+										Row currentRow = currentSheet.createRow(rowIndex);
+										currentRow.createCell(0).setCellValue(key);
+										currentRow.createCell(1).setCellValue(attr);
+										currentRow.createCell(2).setCellValue(value);
+										rowIndex++;
+									}
 								}
 							}
 						}

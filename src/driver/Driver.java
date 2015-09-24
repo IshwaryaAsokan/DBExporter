@@ -5,6 +5,7 @@ import io.OutputWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.tuple.Triple;
@@ -19,7 +20,7 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){		
-		runBuilder(Business.ANNS, OutputFormat.XLSX);
+		runBuilder(Business.PORT, OutputFormat.XLSX);
 	}	
 	
 	private static void runBuilder(Business business, OutputFormat format){
@@ -49,20 +50,23 @@ public class Driver {
 		}
 		else{ //xls
 			//get all attribute types
-			List<String> productAttrTypesList = DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business);
-			List<String> itemAttrTypesList = DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business);
-			List<String> adCopyTypesList = DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business);
-			List<String> crossSellingTypesList = DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business);
-			List<String> keywordTypesList = DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business);
+			List<String> productAttrsList = DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business);
+			List<String> itemAttrsList = DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business);
+			List<String> adCopyAttrsList = DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business);
+			List<String> keywordAttrsList = DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business);
+			List<String> crossSellingAttrsList = DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business);
+			
+			String[] crossSellingHeadersArray = {"Item", "Relationship", "Related Item"};
+			List<String> crossSellingHeaders = Arrays.asList(crossSellingHeadersArray);
 			
 			//build excel sheets
 			List<ExcelOutputData> excelOutput = new ArrayList<ExcelOutputData>();
 			
-			excelOutput.add(new ExcelOutputData("Products", productsJson, productAttrTypesList, ExcelOutputFormat.TABLE));
-			excelOutput.add(new ExcelOutputData("Items", itemsJson, itemAttrTypesList, ExcelOutputFormat.TABLE));
-			excelOutput.add(new ExcelOutputData("Ad Copy", adCopyJson, adCopyTypesList, ExcelOutputFormat.TABLE));
-			excelOutput.add(new ExcelOutputData("Cross Selling", crossSellingJson, crossSellingTypesList, ExcelOutputFormat.EAV));
-			excelOutput.add(new ExcelOutputData("Keywords", keywordsJson, keywordTypesList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Products", productsJson, productAttrsList, productAttrsList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Items", itemsJson, itemAttrsList, itemAttrsList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Ad Copy", adCopyJson, adCopyAttrsList, adCopyAttrsList, ExcelOutputFormat.TABLE));
+			excelOutput.add(new ExcelOutputData("Cross Selling", crossSellingJson, crossSellingHeaders, crossSellingAttrsList, ExcelOutputFormat.EAV));
+			excelOutput.add(new ExcelOutputData("Keywords", keywordsJson, keywordAttrsList, keywordAttrsList, ExcelOutputFormat.TABLE));
 			
 			//output results
 			OutputWriter.writeResult(excelOutput, business, format);

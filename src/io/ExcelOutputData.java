@@ -7,14 +7,16 @@ import definitions.ExcelOutputFormat;
 public class ExcelOutputData {
 	private String sheetName;
 	private JSONObject data;
-	private List<String> types;
+	private List<String> headers;
+	private List<String> attributes;
 	private ExcelOutputFormat excelFormat;
 	
-	public ExcelOutputData(String sheetName, JSONObject data, List<String> types, ExcelOutputFormat excelFormat){
+	public ExcelOutputData(String sheetName, JSONObject data, List<String> headers, List<String> attrs, ExcelOutputFormat excelFormat){
 		setSheetName(sheetName);
 		setData(data);
-		setTypes(types);
+		setHeaders(headers);
 		setExcelFormat(excelFormat);
+		setAttributes(attrs);
 	}
 	
 	public String getSheetName() {
@@ -29,16 +31,22 @@ public class ExcelOutputData {
 	public void setData(JSONObject data) {
 		this.data = data;
 	}
-	public List<String> getTypes() {
-		return types;
+	public List<String> getHeaders() {
+		return headers;
 	}
-	public void setTypes(List<String> types) {
-		this.types = types;
+	public void setHeaders(List<String> headers) {
+		this.headers = headers;
 	}
 	public ExcelOutputFormat getExcelFormat() {
 		return excelFormat;
 	}
 	public void setExcelFormat(ExcelOutputFormat excelFormat) {
 		this.excelFormat = excelFormat;
+	}
+	public List<String> getAttributes() {
+		return attributes;
+	}
+	public void setAttributes(List<String> attributes) {
+		this.attributes = attributes;
 	}
 }
