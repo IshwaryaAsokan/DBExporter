@@ -42,33 +42,35 @@ public class JSONTransformer {
 			String brand = getValue(json, "$.keywords[0].Brand_Name");
 			String model = getValue(json, "$.Item_No");
 			
-			JSONObject product = new JSONObject();
+			JSONObject product = new JSONObject();			
 			product.put("country", "USA");
 			product.put("manufacturerName", "Sterling");
-			product.put("model", model);
-			product.put("productName", brand);
-			product.put("shortDescription", shortDescription);
-			product.put("category", defaultCategory);
-			products.add(product);
+			product = putIfNotNull(product, "model", model);
+			product = putIfNotNull(product, "productName", brand);
+			product = putIfNotNull(product, "shortDescription", shortDescription);
+			product = putIfNotNull(product, "category", defaultCategory);
 					
-//			List<String> skus = getArrayValue(json, "$.[skus]");
-//			for(String skuJson : skus){
-//				JSONObject sku = new JSONObject(skuJson);
-//				String skuStr = getValue(sku, "$.Item_No");
-//				String color = getValue(sku, "$.Color_Finish_Name");
-//				String upcCode = getValue(sku, "$.UPC_Code");
-//				String jpg = getValue(sku, "$.JPG_Item_Image");
-//				String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpg + "?$SterlingMain$";				
-//	
-//					product.put("sku", skuStr);
-//					product.put("upc", upcCode);
-//					product.put("imageURL", jpgImgLocation);
-//					product.put("productGroup", "US");
-//					product.put("action", "Add");
-//					product.put("color", color);
-//					products.add(product.toString());
-//	
-//			}
+			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
+			for(JSONObject sku : skus){
+				String skuStr = getValue(sku, "$.Item_No");
+				String color = getValue(sku, "$.Color_Finish_Name");
+				String upcCode = getValue(sku, "$.UPC_Code");
+				String jpg = getValue(sku, "$.JPG_Item_Image");
+				if(jpg != null){
+					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpg + "?$SterlingMain$";
+					product = putIfNotNull(product, "imageURL", jpgImgLocation);
+				}
+				
+	
+					product = putIfNotNull(product, "sku", skuStr);
+					product = putIfNotNull(product, "upc", upcCode);					
+					product = putIfNotNull(product, "color", color);
+					product.put("productGroup", "US");
+					product.put("action", "Add");
+					
+					products.add(product);
+	
+			}
 		} catch (JSONException e) {
 			System.out.println("Error creating product.");
 			e.printStackTrace();
@@ -87,14 +89,35 @@ public class JSONTransformer {
 		return null;
 	}
 	
-	private static List<String> getArrayValue(JSONObject json, String path){
+	private static List<JSONObject> getArrayValue(JSONObject json, String path){
 		try {
-			List<String> retVal = JsonPath.read(json.toString(), path);
+			List<JSONObject> retVal = new ArrayList<JSONObject>();
+			ArrayList<Object> valArr = JsonPath.read(json.toString(), path);
+			
+			if(valArr != null){
+				for(Object val : valArr){
+					JSONObject valObj = new JSONObject(val.toString());
+					retVal.add(valObj);
+				}				
+			}
+
 			return retVal;
 		}
-		catch(PathNotFoundException e){
+		catch(PathNotFoundException | JSONException e){
 			//for now, do nothing
 		}
 		return null;
+	}
+	
+	private static JSONObject putIfNotNull(JSONObject obj, String key, String value){
+		if(value != null){
+			try {
+				obj.put(key, value);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return obj;
 	}
 }

@@ -26,7 +26,7 @@ import definitions.OutputFormat;
 public class Driver {
 	public static void main(String args[]){		
 		//runBuilder(Business.PORT, OutputFormat.JSON);
-		runBuilderSTRLPriceSpider(Business.STRL, OutputFormat.JSON);
+		runBuilderSTRLPriceSpider(Business.STRL, OutputFormat.XML);
 	}	
 	
 	private static void runBuilder(Business business, OutputFormat format){
@@ -110,8 +110,7 @@ public class Driver {
 		JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(productsJson, mappings, children);
 		
 		JSONArray skus = JSONTransformer.transformSTRL(populatedProductsJson);
-		System.out.println(skus);
-		//OutputWriter.writeResult(populatedProductsJson, business, format);
+		OutputWriter.writeResult(skus, business, format);
 		
 		//close connection
 		try {
