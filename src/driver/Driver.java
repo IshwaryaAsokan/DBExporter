@@ -20,7 +20,7 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){		
-		runBuilder(Business.PORT, OutputFormat.XLSX);
+		runBuilder(Business.PORT, OutputFormat.JSON);
 	}	
 	
 	private static void runBuilder(Business business, OutputFormat format){
