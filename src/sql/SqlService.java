@@ -17,19 +17,23 @@ public class SqlService {
 	private final static String PUNI_ROOT = "src/sql/parameterized/puni/";
 	
 	public static String getSqlFile(String fileName, Business business){
+		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
+			String fileLocation = PUNI_ROOT + fileName;
+			String sql = getSqlFile(fileLocation);
+			sql = sql.replace("{{business}}", business.toString());
+			return sql;
+		}
+		else {
+			String fileLocation = SQL_ROOT + business.toString() + "/" + fileName;
+			return getSqlFile(fileLocation);
+		}			
+	}
+	
+	public static String getSqlFile(String fileLocation) {
 		try {
-			if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
-				String fileLocation = PUNI_ROOT + fileName;
-				String sql = new String(Files.readAllBytes(Paths.get(fileLocation)));
-				sql = sql.replace("{{business}}", business.toString());
-				return sql;
-			}
-			else {
-				String fileLocation = SQL_ROOT + business.toString() + "/" + fileName;
-				return new String(Files.readAllBytes(Paths.get(fileLocation)));
-			}			
+			return new String(Files.readAllBytes(Paths.get(fileLocation)));
 		} catch (IOException e) {
-			System.out.println("Error reading: " + fileName);
+			System.out.println("Error reading file: " + fileLocation);
 			e.printStackTrace();
 		}
 		return null;
@@ -37,7 +41,15 @@ public class SqlService {
 	
 	public static ResultSet getResults(Connection connection, String fileName, Business business){
 		String sql = getSqlFile(fileName, business);
-		
+		return executeQuery(connection, sql);
+	}
+	
+	public static ResultSet getResults(Connection connection, String fileLocation){
+		String sql = getSqlFile(fileLocation);
+		return executeQuery(connection, sql);
+	}
+	
+	private static ResultSet executeQuery(Connection connection, String sql){
 		if(sql != null){
 			Statement statement;
 			
@@ -51,6 +63,6 @@ public class SqlService {
 			}						
 		}
 				
-		return null;
-	}
+		return null;		
+	}			
 }
