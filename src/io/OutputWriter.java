@@ -51,7 +51,7 @@ public class OutputWriter {
 			if(format == OutputFormat.XML){
 				fileWriter.append(org.json.XML.toString(obj));
 			}
-			else{
+			else{ //json
 				fileWriter.append(obj.toString(4));
 			}
 		}

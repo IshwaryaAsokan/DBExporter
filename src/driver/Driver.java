@@ -18,7 +18,7 @@ import sql.SqlService;
 import connection.ConnectionService;
 import data.DataBuilder;
 import data.JSONObjectBuilder;
-import data.transformers.json.JSONTransformer;
+import data.transformers.json.StrlJSONTransformer;
 import definitions.Business;
 import definitions.ExcelOutputFormat;
 import definitions.OutputFormat;
@@ -109,7 +109,7 @@ public class Driver {
 		
 		JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(productsJson, mappings, children);
 		
-		JSONArray skus = JSONTransformer.transformSTRL(populatedProductsJson);
+		JSONArray skus = StrlJSONTransformer.transform(populatedProductsJson);
 		OutputWriter.writeResult(skus, business, format);
 		
 		//close connection
