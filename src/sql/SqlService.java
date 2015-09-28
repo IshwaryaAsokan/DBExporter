@@ -34,7 +34,6 @@ public class SqlService {
 			return new String(Files.readAllBytes(Paths.get(fileLocation)));
 		} catch (IOException e) {
 			System.out.println("Error reading file: " + fileLocation);
-			e.printStackTrace();
 		}
 		return null;
 	}

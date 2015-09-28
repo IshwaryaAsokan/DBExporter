@@ -18,7 +18,7 @@ public abstract class JSONTransformer {
 			return retVal;
 		}
 		catch(PathNotFoundException e){
-			e.printStackTrace();
+			System.out.println("Missing path " + path + " in " + json.toString());
 		}
 		return null;
 	}

@@ -37,17 +37,17 @@ public class StrlJSONTransformer extends JSONTransformer{
 			String shortDescription = getValue(json, "$.Description_Thumbnail");
 			String brand = getValue(json, "$.keywords[0].Brand_Name");
 			String model = getValue(json, "$.Item_No");
-			
-			JSONObject product = new JSONObject();			
-			product.put("country", "USA");
-			product.put("manufacturerName", "Sterling");
-			product = putIfNotNull(product, "model", model);
-			product = putIfNotNull(product, "productName", brand);
-			product = putIfNotNull(product, "shortDescription", shortDescription);
-			product = putIfNotNull(product, "category", defaultCategory);
-					
+								
 			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
 			for(JSONObject sku : skus){
+				JSONObject product = new JSONObject();
+				product.put("country", "USA");
+				product.put("manufacturerName", "Sterling");
+				product = putIfNotNull(product, "model", model);
+				product = putIfNotNull(product, "productName", brand);
+				product = putIfNotNull(product, "shortDescription", shortDescription);
+				product = putIfNotNull(product, "category", defaultCategory);
+				
 				String skuStr = getValue(sku, "$.Item_No");
 				String color = getValue(sku, "$.Color_Finish_Name");
 				String upcCode = getValue(sku, "$.UPC_Code");
@@ -57,15 +57,13 @@ public class StrlJSONTransformer extends JSONTransformer{
 					product = putIfNotNull(product, "imageURL", jpgImgLocation);
 				}
 				
-	
-					product = putIfNotNull(product, "sku", skuStr);
-					product = putIfNotNull(product, "upc", upcCode);					
-					product = putIfNotNull(product, "color", color);
-					product.put("productGroup", "US");
-					product.put("action", "Add");
-					
-					products.add(product);
-	
+				product = putIfNotNull(product, "sku", skuStr);
+				product = putIfNotNull(product, "upc", upcCode);					
+				product = putIfNotNull(product, "color", color);
+				product.put("productGroup", "US");
+				product.put("action", "Add");
+				
+				products.add(product);	
 			}
 		} catch (JSONException e) {
 			System.out.println("Error creating product.");

@@ -11,7 +11,7 @@ public class ExcelOutputData {
 	private List<String> attributes;
 	private ExcelOutputFormat excelFormat;
 	
-	public ExcelOutputData(String sheetName, JSONObject data, List<String> headers, List<String> attrs, ExcelOutputFormat excelFormat){
+	public ExcelOutputData(String sheetName, JSONObject data, List<String> attrs, List<String> headers, ExcelOutputFormat excelFormat){
 		setSheetName(sheetName);
 		setData(data);
 		setHeaders(headers);
