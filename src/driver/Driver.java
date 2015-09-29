@@ -14,7 +14,7 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.STRL, OutputFormat.XML);
+		runBuilder(Business.KPNA, OutputFormat.JSON);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
