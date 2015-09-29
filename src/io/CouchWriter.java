@@ -54,29 +54,19 @@ public class CouchWriter {
 			while(iter.hasNext()){
 				String key = iter.next();
 				JSONObject product = data.getJSONObject(key);				
-				String itemNo = product.getString("Item_No");		
+				String itemNo = product.getString("Item_No");
+				product.put("_id", itemNo);
 				
-				////////////////////////
-				//i think this is better but needs to be tested
+				Iterator<String> attrs = product.keys();
+				Map<String, Object> map = new HashMap<>();
+				map.put("_id", "K-" + itemNo);
 				
-				Map<String, Object> productMap = new Gson().fromJson(product.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
-				productMap.put("_id", itemNo);
+				while(attrs.hasNext()){
+					String attr = attrs.next();
+					map.put(attr, product.get(attr));
+				}
 				
-				////////////////////////
-				//this is running right now - fail
-				
-//				JsonObject json = new JsonObject();
-//				json.addProperty("_id", itemNo);
-//
-//				Iterator<String> attrs = product.keys();
-//				while(attrs.hasNext()){
-//					String attr = attrs.next();
-//					json.addProperty(attr, product.getString(attr));
-//				}
-				
-				////////////////////////
-				
-				getDbClient().save(productMap);
+				getDbClient().save(map);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
