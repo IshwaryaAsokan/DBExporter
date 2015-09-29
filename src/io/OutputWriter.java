@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -14,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import data.transformers.json.TransformationService;
 import definitions.Business;
 import definitions.ExcelOutputFormat;
 import definitions.OutputFormat;
@@ -49,7 +51,16 @@ public class OutputWriter {
 		try {
 			fileWriter = new FileWriter(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			if(format == OutputFormat.XML){
-				fileWriter.append(org.json.XML.toString(obj));
+				String outputValue = org.json.XML.toString(obj);
+
+				String rootReplacement = TransformationService.getRootValue(business);
+				if(StringUtils.isNotEmpty(rootReplacement)){
+					outputValue = outputValue.replace("<array>", "<" + rootReplacement + ">");
+					outputValue = outputValue.replace("</array>", "</" + rootReplacement + ">");
+				}
+				
+				outputValue = TransformationService.getStartXmlWrapper(business) + outputValue + TransformationService.getEndXmlWrapper(business);				
+				fileWriter.append(outputValue);
 			}
 			else{ //json
 				fileWriter.append(obj.toString(4));

@@ -53,7 +53,8 @@ public class StrlJSONTransformer extends JSONTransformer{
 				String upcCode = getValue(sku, "$.UPC_Code");
 				String jpg = getValue(sku, "$.JPG_Item_Image");
 				if(jpg != null){
-					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpg + "?$SterlingMain$";
+					String jpgRoot = jpg.replace(".jpg", "");
+					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpgRoot + "?$SterlingMain$";
 					product = putIfNotNull(product, "imageURL", jpgImgLocation);
 				}
 				

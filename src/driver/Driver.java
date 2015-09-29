@@ -13,9 +13,9 @@ import definitions.Business;
 import definitions.OutputFormat;
 
 public class Driver {
-	public static void main(String args[]){		
-		runBuilder(Business.MIRA, OutputFormat.JSON);
-	}	
+	public static void main(String args[]){
+		runBuilder(Business.STRL, OutputFormat.XML);
+	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
 		RunData runData = new RunData(business, format);
@@ -32,7 +32,7 @@ public class Driver {
 			else { //format == OutputFormat.XML
 				JSONTransformer transformer = TransformationService.getService(business);
 				JSONArray skus = transformer.transform(populatedProductsJson);
-				OutputWriter.writeResult(skus, business, format);			
+				OutputWriter.writeResult(skus, business, format);
 			}
 			
 		}
