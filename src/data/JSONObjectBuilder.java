@@ -79,7 +79,7 @@ public class JSONObjectBuilder {
 				Iterator<String> keys = childInfo.keys();
 				
 				while(keys.hasNext()){
-					String childItemNo = keys.next();					
+					String childItemNo = keys.next();
 					String attachInfoTo = mapToParent ? mappings.get(childItemNo) : childItemNo;
 					
 					if(products.has(attachInfoTo)){
@@ -104,5 +104,38 @@ public class JSONObjectBuilder {
 		}
 		
 		return products;		
+	}
+	
+	public static JSONObject mergeJsonAttributes(JSONObject result, JSONObject toMerge){ //this isn't quite right...
+		try {
+			Iterator<String> keys = toMerge.keys();
+			
+			while(keys.hasNext()){
+				String itemNo = keys.next();
+				
+				if(result.has(itemNo) && toMerge.has(itemNo)){
+					JSONObject resultInfo = result.getJSONObject(itemNo);
+					JSONObject toMergeInfo = toMerge.getJSONObject(itemNo);
+					
+					Iterator<String> attrs = toMergeInfo.keys();
+					while(attrs.hasNext()){
+						String attr = attrs.next();
+						
+						if(resultInfo.has(attr)){
+							System.out.println("Error in trying to merge JSONObjects. Conflicting attribute: " + attr);
+						}
+						else {
+							resultInfo.put(attr, toMergeInfo.get(attr));							
+						}
+					}
+					result.put(itemNo, resultInfo);
+				}
+			}		
+		} catch (JSONException e) {
+			System.out.println("Error attempting to merge JSONObjects [mergeJsonAttributes]");
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 }

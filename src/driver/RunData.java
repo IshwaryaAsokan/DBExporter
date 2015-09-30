@@ -97,7 +97,9 @@ public class RunData {
 		children.add(Triple.of("skus", getItemsJson(), Boolean.TRUE));
 		children.add(Triple.of("adCopy", getAdCopyJson(), Boolean.FALSE));
 		children.add(Triple.of("crossSelling", getCrossSellingJson(), Boolean.FALSE));
-		children.add(Triple.of("keywords", getKeywordsJson(), Boolean.FALSE));
+		
+		//merge keywords into productsJson
+		this.setProductsJson(JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson()));
 		
 		return children;
 	}

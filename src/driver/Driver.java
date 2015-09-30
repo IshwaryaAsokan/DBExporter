@@ -4,6 +4,7 @@ import io.CouchWriter;
 import io.ExcelOutputData;
 import io.OutputWriter;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -18,7 +19,8 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.PORT, OutputFormat.XLSX);
+		System.out.println(new File(".").getAbsolutePath());
+		runBuilder(Business.MIRA, OutputFormat.JSON);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
