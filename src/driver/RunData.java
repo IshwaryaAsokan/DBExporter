@@ -49,11 +49,16 @@ public class RunData {
 	
 	public void populateJson(){
 		setProductsJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(getConnection(), "all-product-attributes.sql", business)));
+		System.out.println("JSON populated: products");
 		
 		setItemsJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "all-item-attributes.sql", business)));
+		System.out.println("JSON populated: items");
 		setAdCopyJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "ad-copy.sql", business)));
+		System.out.println("JSON populated: ad-copy");
 		setCrossSellingJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "cross-selling.sql", business)));
+		System.out.println("JSON populated: cross selling");
 		setKeywordsJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "keywords.sql", business)));
+		System.out.println("JSON populated: keywords");
 	}
 	
 	public void populateAttributeTypesLists(){

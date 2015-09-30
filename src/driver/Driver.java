@@ -18,12 +18,14 @@ import definitions.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.KPNA, OutputFormat.COUCHDB);
+		runBuilder(Business.PORT, OutputFormat.XLSX);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
 		RunData runData = new RunData(business, format);
+		System.out.println("Connection made");
 		runData.populateJson();
+		System.out.println("JSON populated");
 
 		if(format == OutputFormat.JSON || format == OutputFormat.XML || format == OutputFormat.COUCHDB){
 			runData.populateMappings();
@@ -46,10 +48,14 @@ public class Driver {
 		}
 		else{ //xls
 			runData.populateAttributeTypesLists();
+			System.out.println("Attribute types defined");
 			runData.populateHeaders();
+			System.out.println("Headers populated");
 			List<ExcelOutputData> excelOutput = runData.getExcelOutputFormat();			
+			System.out.println("Excel output defined");
 
 			OutputWriter.writeResult(excelOutput, business, format);
+			System.out.println("Result written");
 		}
 
 		//close connection

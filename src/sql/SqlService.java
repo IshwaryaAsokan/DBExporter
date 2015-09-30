@@ -12,7 +12,7 @@ import java.util.Arrays;
 import definitions.Business;
 
 public class SqlService {
-	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR"};
+	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR", "MIRA"};
 	private final static String SQL_ROOT = "src/sql/";
 	private final static String PUNI_ROOT = "src/sql/parameterized/puni/";
 	
