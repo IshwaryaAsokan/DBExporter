@@ -54,12 +54,11 @@ public class CouchWriter {
 			while(iter.hasNext()){
 				String key = iter.next();
 				JSONObject product = data.getJSONObject(key);				
-				String itemNo = product.getString("Item_No");
-				product.put("_id", itemNo);
+				String itemNo = "K-" + product.getString("Item_No");
 				
 				Iterator<String> attrs = product.keys();
 				Map<String, Object> map = new HashMap<>();
-				map.put("_id", "K-" + itemNo);
+				map.put("_id", itemNo);
 				
 				while(attrs.hasNext()){
 					String attr = attrs.next();
