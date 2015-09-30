@@ -41,26 +41,29 @@ public class StrlJSONTransformer extends JSONTransformer{
 			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
 			for(JSONObject sku : skus){
 				JSONObject product = new JSONObject();
-				product.put("country", "USA");
+				product.put("country", "US");
 				product.put("manufacturerName", "Sterling");
-				product = putIfNotNull(product, "model", model);
-				product = putIfNotNull(product, "productName", brand);
-				product = putIfNotNull(product, "shortDescription", shortDescription);
-				product = putIfNotNull(product, "category", defaultCategory);
+				product = putNullStringIfNull(product, "model", model);
+				product = putNullStringIfNull(product, "shortDescription", shortDescription);
+				product = putNullStringIfNull(product, "category", defaultCategory);
 				
 				String skuStr = getValue(sku, "$.Item_No");
 				String color = getValue(sku, "$.Color_Finish_Name");
 				String upcCode = getValue(sku, "$.UPC_Code");
+
 				String jpg = getValue(sku, "$.JPG_Item_Image");
 				if(jpg != null){
 					String jpgRoot = jpg.replace(".jpg", "");
 					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpgRoot + "?$SterlingMain$";
 					product = putIfNotNull(product, "imageURL", jpgImgLocation);
 				}
+				else {
+					product = putNullStringIfNull(product, "imageURL", null);
+				}
 				
-				product = putIfNotNull(product, "sku", skuStr);
-				product = putIfNotNull(product, "upc", upcCode);					
-				product = putIfNotNull(product, "color", color);
+				product = putNullStringIfNull(product, "sku", skuStr);
+				product = putNullStringIfNull(product, "upc", upcCode);					
+				product = putNullStringIfNull(product, "color", color);
 				product.put("productGroup", "US");
 				product.put("action", "Add");
 				

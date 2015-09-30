@@ -53,4 +53,17 @@ public abstract class JSONTransformer {
 		}
 		return obj;
 	}
+	static JSONObject putNullStringIfNull(JSONObject obj, String key, String value){
+		try {
+			if(value != null){
+				obj.put(key, value);
+			}
+			else {
+				obj.put(key, "null");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return obj;
+	}
 }
