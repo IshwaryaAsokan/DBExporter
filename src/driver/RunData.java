@@ -85,7 +85,7 @@ public class RunData {
 		excelOutput.add(new ExcelOutputData("Products", getProductsJson(), getProductAttrsList(), getProductAttrHeaders(), ExcelOutputFormat.TABLE));
 		excelOutput.add(new ExcelOutputData("Items", getItemsJson(), getItemAttrsList(), getItemAttrHeaders(), ExcelOutputFormat.TABLE));
 		excelOutput.add(new ExcelOutputData("Ad Copy", getAdCopyJson(), getAdCopyAttrsList(), getAdCopyHeaders(), ExcelOutputFormat.TABLE));
-		excelOutput.add(new ExcelOutputData("Cross Selling", getCrossSellingJson(),getAdCopyAttrsList(), getCrossSellingHeaders(), ExcelOutputFormat.EAV));
+		excelOutput.add(new ExcelOutputData("Cross Selling", getCrossSellingJson(), getCrossSellingAttrsList(), getCrossSellingHeaders(), ExcelOutputFormat.EAV));
 		excelOutput.add(new ExcelOutputData("Keywords", getKeywordsJson(), getKeywordAttrsList(), getKeywordHeaders(), ExcelOutputFormat.TABLE));
 		
 		return excelOutput;
