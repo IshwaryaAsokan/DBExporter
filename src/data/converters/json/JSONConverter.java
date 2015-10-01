@@ -57,13 +57,13 @@ public abstract class JSONConverter {
 		}
 		return obj;
 	}
-	static JSONObject putNullStringIfNull(JSONObject obj, String key, String value){
+	static JSONObject putValOrEmptyString(JSONObject obj, String key, String value){
 		try {
 			if(value != null){
 				obj.put(key, value);
 			}
 			else {
-				obj.put(key, "null");
+				obj.put(key, "");
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

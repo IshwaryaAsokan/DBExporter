@@ -45,9 +45,9 @@ public class STRLJSONConverter extends JSONConverter{
 				JSONObject product = new JSONObject();
 				product.put("country", "US");
 				product.put("manufacturerName", "Sterling");
-				product = putNullStringIfNull(product, "model", model);
-				product = putNullStringIfNull(product, "shortDescription", shortDescription);
-				product = putNullStringIfNull(product, "category", defaultCategory);
+				product = putValOrEmptyString(product, "model", model);
+				product = putValOrEmptyString(product, "shortDescription", shortDescription);
+				product = putValOrEmptyString(product, "category", defaultCategory);
 				
 				String skuStr = getValue(sku, "$.Item_No");
 				String color = getValue(sku, "$.Color_Finish_Name");
@@ -59,12 +59,12 @@ public class STRLJSONConverter extends JSONConverter{
 					product = putIfNotNull(product, "imageURL", wrapInCData(wrapInUrl(jpgRoot)));
 				}
 				else {
-					product = putNullStringIfNull(product, "imageURL", null);
+					product = putValOrEmptyString(product, "imageURL", " ");
 				}
 				
-				product = putNullStringIfNull(product, "sku", skuStr);
-				product = putNullStringIfNull(product, "upc", upcCode);					
-				product = putNullStringIfNull(product, "color", color);
+				product = putValOrEmptyString(product, "sku", skuStr);
+				product = putValOrEmptyString(product, "upc", upcCode);					
+				product = putValOrEmptyString(product, "color", color);
 				product.put("productGroup", "US");
 				product.put("action", "Add");
 				
@@ -87,7 +87,7 @@ public class STRLJSONConverter extends JSONConverter{
 
 	@Override
 	public String getStartXmlWrapper() {
-		return "<?xml version=\"1.0\" encoding=\"utf-8\" ?><SterlingProducts><CountryCode=\"US\">";
+		return "<?xml version=\"1.0\" encoding=\"utf-8\" ?><SterlingProducts><CountryCode=\"US\" />";
 	}
 
 	@Override
