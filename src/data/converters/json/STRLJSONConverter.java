@@ -35,7 +35,6 @@ public class STRLJSONConverter extends JSONConverter{
 		try {
 			String defaultCategory = getValue(json, "$.ATG_Default_Category");
 			String shortDescription = getValue(json, "$.Description_Thumbnail");
-			String brand = getValue(json, "$.keywords[0].Brand_Name");
 			String model = getValue(json, "$.Item_No");
 								
 			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
@@ -54,7 +53,7 @@ public class STRLJSONConverter extends JSONConverter{
 				String jpg = getValue(sku, "$.JPG_Item_Image");
 				if(jpg != null){
 					String jpgRoot = jpg.replace(".jpg", "");
-					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpgRoot + "?$SterlingMain$";
+					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpgRoot + "?wid=2000";
 					product = putIfNotNull(product, "imageURL", jpgImgLocation);
 				}
 				else {

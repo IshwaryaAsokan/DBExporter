@@ -15,7 +15,7 @@ import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.MIRA, OutputFormat.JSON);
+		runBuilder(Business.STRL, OutputFormat.XML);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
