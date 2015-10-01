@@ -1,14 +1,14 @@
-package data.transformers.json;
+package data.converters.json;
 
-import definitions.Business;
+import definitions.enums.Business;
 
-public class TransformationService {
-	public static JSONTransformer getService(Business business){
+public class ConverterService {
+	public static JSONConverter getService(Business business){
 		if(business == Business.STRL){
-			return new STRLJSONTransformer();
+			return new STRLJSONConverter();
 		}
 		else if(business == Business.KPNA){
-			return new KPNAJSONTransformer();
+			return new KPNAJSONConverter();
 		}
 		
 		return null;

@@ -16,29 +16,36 @@ import connection.ConnectionService;
 import sql.SqlService;
 import data.DataBuilder;
 import data.JSONObjectBuilder;
-import definitions.Business;
-import definitions.ExcelOutputFormat;
-import definitions.OutputFormat;
+import data.alteration.values.DataValueTransformer;
+import data.alteration.values.Transformation;
+import definitions.enums.Business;
+import definitions.enums.ExcelOutputFormat;
+import definitions.enums.JsonTransformationType;
+import definitions.enums.OutputFormat;
 
 public class RunData {
 	private Business business;
 	private OutputFormat format;
 	private Connection connection;
+
 	private JSONObject productsJson;
 	private JSONObject itemsJson;
 	private JSONObject adCopyJson;
 	private JSONObject crossSellingJson;
 	private JSONObject keywordsJson;
+	
 	private List<String> productAttrsList;
 	private List<String> itemAttrsList;
 	private List<String> adCopyAttrsList;
 	private List<String> keywordAttrsList;
 	private List<String> crossSellingAttrsList;
+	
 	private List<String> productAttrHeaders;
 	private List<String> itemAttrHeaders;
 	private List<String> adCopyHeaders;
 	private List<String> keywordHeaders;
 	private List<String> crossSellingHeaders;
+	
 	private Map<String,String> mappings;
 
 	public RunData(Business business, OutputFormat format){
@@ -99,13 +106,24 @@ public class RunData {
 		children.add(Triple.of("crossSelling", getCrossSellingJson(), Boolean.FALSE));
 		
 		//merge keywords into productsJson
-		setProductsJson(JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson()));
+		JSONObject outputData = JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson());
+		
+		
+		setProductsJson(outputData);
 		
 		return children;
 	}
 	
 	public void populateMappings(){
 		this.setMappings(JSONObjectBuilder.mapItemsToProducts(SqlService.getResults(connection, "parent-child.sql", business)));
+	}
+	
+	public void applyDataTransformations(){ //rename keys, append/prepend values
+		List<Transformation> transformations = new ArrayList<Transformation>();
+		transformations.add(new Transformation(JsonTransformationType.PREPEND, "JPG_Photo_Name", "www."));
+		transformations.add(new Transformation(JsonTransformationType.APPEND, "JPG_Photo_Name", "--testing the appending!"));
+		transformations.add(new Transformation(JsonTransformationType.NEW_KEY, "JPG_Photo_Name", "JPG"));
+		DataValueTransformer.transform(getProductsJson(), transformations);
 	}
 	
 	public void closeConnection(){

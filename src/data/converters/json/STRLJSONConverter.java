@@ -1,4 +1,4 @@
-package data.transformers.json;
+package data.converters.json;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,8 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class STRLJSONTransformer extends JSONTransformer{
-	public JSONArray transform(JSONObject originalJson){
+public class STRLJSONConverter extends JSONConverter{
+	public JSONArray convert(JSONObject originalJson){
 		JSONArray transformedJson = new JSONArray();
 		try {
 			Iterator<String> iter = originalJson.keys();

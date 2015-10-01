@@ -1,4 +1,4 @@
-package data.transformers.json;
+package data.converters.json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.json.JSONObject;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
-public abstract class JSONTransformer {
+public abstract class JSONConverter {
 	//this method must be implemented on a per LOB basis
-	public abstract JSONArray transform(JSONObject originalJson);
+	public abstract JSONArray convert(JSONObject originalJson);
 	
 	static String getValue(JSONObject json, String path){
 		try {

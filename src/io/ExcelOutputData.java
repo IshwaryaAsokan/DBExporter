@@ -1,8 +1,10 @@
 package io;
 
 import java.util.List;
+
 import org.json.JSONObject;
-import definitions.ExcelOutputFormat;
+
+import definitions.enums.ExcelOutputFormat;
 
 public class ExcelOutputData {
 	private String sheetName;

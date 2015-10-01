@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import definitions.Business;
+import definitions.enums.Business;
 import sql.SqlService;
 
 public class DataBuilder {

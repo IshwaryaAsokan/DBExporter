@@ -3,23 +3,18 @@ package driver;
 import io.CouchWriter;
 import io.ExcelOutputData;
 import io.OutputWriter;
-
-import java.io.File;
 import java.util.List;
-
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import data.JSONObjectBuilder;
-import data.transformers.json.JSONTransformer;
-import data.transformers.json.TransformationService;
-import definitions.Business;
-import definitions.OutputFormat;
+import data.converters.json.JSONConverter;
+import data.converters.json.ConverterService;
+import definitions.enums.Business;
+import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		System.out.println(new File(".").getAbsolutePath());
 		runBuilder(Business.MIRA, OutputFormat.JSON);
 	}
 	
@@ -31,19 +26,22 @@ public class Driver {
 
 		if(format == OutputFormat.JSON || format == OutputFormat.XML || format == OutputFormat.COUCHDB){
 			runData.populateMappings();
-			List<Triple<String,JSONObject,Boolean>> children = runData.getJsonOutputFormat();
-			JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
+			List<Triple<String,JSONObject,Boolean>> children = runData.getJsonOutputFormat();			
 
 			if(format == OutputFormat.JSON){
+				runData.applyDataTransformations();
+				JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
 				OutputWriter.writeResult(populatedProductsJson, business, format);
 			}
 			else if(format == OutputFormat.COUCHDB){
+				JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
 				CouchWriter writer = new CouchWriter();
 				writer.writeToCouch(populatedProductsJson);
 			}
 			else { //format == OutputFormat.XML
-				JSONTransformer transformer = TransformationService.getService(business);
-				JSONArray skus = transformer.transform(populatedProductsJson);
+				JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
+				JSONConverter transformer = ConverterService.getService(business);
+				JSONArray skus = transformer.convert(populatedProductsJson);
 				OutputWriter.writeResult(skus, business, format);
 			}
 			

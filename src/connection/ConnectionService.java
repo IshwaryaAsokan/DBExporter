@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import definitions.Business;
+import definitions.enums.Business;
 
 public class ConnectionService {
 	

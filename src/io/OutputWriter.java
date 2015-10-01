@@ -15,10 +15,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import data.transformers.json.TransformationService;
-import definitions.Business;
-import definitions.ExcelOutputFormat;
-import definitions.OutputFormat;
+import data.converters.json.ConverterService;
+import definitions.enums.Business;
+import definitions.enums.ExcelOutputFormat;
+import definitions.enums.OutputFormat;
 
 public class OutputWriter {
 	private static final String FILE_LOCATION_ROOT = "C:/Applications/DBHumanReadableOutput/";
@@ -53,13 +53,13 @@ public class OutputWriter {
 			if(format == OutputFormat.XML){
 				String outputValue = org.json.XML.toString(obj);
 
-				String rootReplacement = TransformationService.getRootValue(business);
+				String rootReplacement = ConverterService.getRootValue(business);
 				if(StringUtils.isNotEmpty(rootReplacement)){
 					outputValue = outputValue.replace("<array>", "<" + rootReplacement + ">");
 					outputValue = outputValue.replace("</array>", "</" + rootReplacement + ">");
 				}
 				
-				outputValue = TransformationService.getStartXmlWrapper(business) + outputValue + TransformationService.getEndXmlWrapper(business);				
+				outputValue = ConverterService.getStartXmlWrapper(business) + outputValue + ConverterService.getEndXmlWrapper(business);				
 				fileWriter.append(outputValue);
 			}
 			else{ //json
