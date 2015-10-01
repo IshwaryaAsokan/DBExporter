@@ -43,7 +43,6 @@ public class STRLJSONConverter extends JSONConverter{
 			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
 			for(JSONObject sku : skus){
 				JSONObject product = new JSONObject();
-				product.put("country", "US");
 				product.put("manufacturerName", "Sterling");
 				product = putValOrEmptyString(product, "model", model);
 				product = putValOrEmptyString(product, "shortDescription", shortDescription);
@@ -87,12 +86,12 @@ public class STRLJSONConverter extends JSONConverter{
 
 	@Override
 	public String getStartXmlWrapper() {
-		return "<?xml version=\"1.0\" encoding=\"utf-8\" ?><SterlingProducts><Country code=\"US\">";
+		return "<?xml version=\"1.0\" encoding=\"utf-8\" ?><KohlerProducts><Country code=\"US\">";
 	}
 
 	@Override
 	public String getEndXmlWrapper() {
-		return "</Country></SterlingProducts>";
+		return "</Country></KohlerProducts>";
 	}
 
 	@Override
