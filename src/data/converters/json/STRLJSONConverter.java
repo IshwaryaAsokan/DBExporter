@@ -3,6 +3,9 @@ package data.converters.json;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,8 +56,7 @@ public class STRLJSONConverter extends JSONConverter{
 				String jpg = getValue(sku, "$.JPG_Item_Image");
 				if(jpg != null){
 					String jpgRoot = jpg.replace(".jpg", "");
-					String jpgImgLocation = "http://s7d4.scene7.com/is/image/Kohler/" + jpgRoot + "?wid=2000";
-					product = putIfNotNull(product, "imageURL", jpgImgLocation);
+					product = putIfNotNull(product, "imageURL", wrapInCData(wrapInUrl(jpgRoot)));
 				}
 				else {
 					product = putNullStringIfNull(product, "imageURL", null);
@@ -73,5 +75,33 @@ public class STRLJSONConverter extends JSONConverter{
 			e.printStackTrace();
 		}		
 		return products;
+	}
+	
+	private static String wrapInCData(String val){
+		return "<![CDATA[" + val + "]]>";
+	}
+	
+	private static String wrapInUrl(String val){
+		return "http://s7d4.scene7.com/is/image/Kohler/" + val + "?wid=2000";
+	}
+
+	@Override
+	public String getStartXmlWrapper() {
+		return "<?xml version=\"1.0\" encoding=\"utf-8\" ?><SterlingProducts><CountryCode=\"US\">";
+	}
+
+	@Override
+	public String getEndXmlWrapper() {
+		return "<SterlingProducts>";
+	}
+
+	@Override
+	public List<Pair<String, String>> getReplacements() {
+		List<Pair<String, String>> replacements = new ArrayList<Pair<String, String>>();
+		replacements.add(Pair.of("<array>", "<Product>"));
+		replacements.add(Pair.of("</array>", "</Product>"));
+		replacements.add(Pair.of("&lt;", "<"));
+		replacements.add(Pair.of("&gt;", ">"));
+		return replacements;
 	}
 }

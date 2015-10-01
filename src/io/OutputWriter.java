@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -53,13 +54,12 @@ public class OutputWriter {
 			if(format == OutputFormat.XML){
 				String outputValue = org.json.XML.toString(obj);
 
-				String rootReplacement = ConverterService.getRootValue(business);
-				if(StringUtils.isNotEmpty(rootReplacement)){
-					outputValue = outputValue.replace("<array>", "<" + rootReplacement + ">");
-					outputValue = outputValue.replace("</array>", "</" + rootReplacement + ">");
+				List<Pair<String, String>> replacements = ConverterService.getService(business).getReplacements();
+				for(Pair<String, String> replacement : replacements){
+					outputValue = outputValue.replace(replacement.getLeft(), replacement.getRight());
 				}
-				
-				outputValue = ConverterService.getStartXmlWrapper(business) + outputValue + ConverterService.getEndXmlWrapper(business);				
+										
+				outputValue = ConverterService.getService(business).getStartXmlWrapper() + outputValue + ConverterService.getService(business).getEndXmlWrapper();				
 				fileWriter.append(outputValue);
 			}
 			else{ //json

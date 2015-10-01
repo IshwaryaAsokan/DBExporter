@@ -2,6 +2,7 @@ package data.converters.json;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +12,9 @@ import com.jayway.jsonpath.PathNotFoundException;
 public abstract class JSONConverter {
 	//this method must be implemented on a per LOB basis
 	public abstract JSONArray convert(JSONObject originalJson);
+	public abstract String getStartXmlWrapper();
+	public abstract String getEndXmlWrapper();
+	public abstract List<Pair<String, String>> getReplacements();
 	
 	static String getValue(JSONObject json, String path){
 		try {
