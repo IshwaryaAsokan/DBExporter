@@ -99,7 +99,7 @@ public class RunData {
 		children.add(Triple.of("crossSelling", getCrossSellingJson(), Boolean.FALSE));
 		
 		//merge keywords into productsJson
-		this.setProductsJson(JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson()));
+		setProductsJson(JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson()));
 		
 		return children;
 	}

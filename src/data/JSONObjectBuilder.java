@@ -106,7 +106,7 @@ public class JSONObjectBuilder {
 		return products;		
 	}
 	
-	public static JSONObject mergeJsonAttributes(JSONObject result, JSONObject toMerge){ //this isn't quite right...
+	public static JSONObject mergeJsonAttributes(JSONObject result, JSONObject toMerge){
 		try {
 			Iterator<String> keys = toMerge.keys();
 			
@@ -121,7 +121,7 @@ public class JSONObjectBuilder {
 					while(attrs.hasNext()){
 						String attr = attrs.next();
 						
-						if(resultInfo.has(attr)){
+						if(resultInfo.has(attr) && !"Item_No".equalsIgnoreCase(attr)){
 							System.out.println("Error in trying to merge JSONObjects. Conflicting attribute: " + attr);
 						}
 						else {

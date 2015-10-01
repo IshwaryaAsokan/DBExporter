@@ -3,7 +3,7 @@ package data.transformers.json;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class KpnaJSONTransformer extends JSONTransformer {
+public class KPNAJSONTransformer extends JSONTransformer {
 
 	@Override
 	public JSONArray transform(JSONObject originalJson) {

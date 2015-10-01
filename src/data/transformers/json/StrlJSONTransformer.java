@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class StrlJSONTransformer extends JSONTransformer{
+public class STRLJSONTransformer extends JSONTransformer{
 	public JSONArray transform(JSONObject originalJson){
 		JSONArray transformedJson = new JSONArray();
 		try {
