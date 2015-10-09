@@ -12,15 +12,20 @@ public class ConnectionService {
 	
 	static Properties properties = new Properties();
 	static InputStream input;
+	private Business business;
 	
-	public static Connection getConnection(Business business){ //if this program is expanded create an enum for business
+	public ConnectionService(Business business){
+		setBusiness(business);
+	}
+
+	public Connection getConnection(){ //if this program is expanded create an enum for business
 		try {
-			input = new FileInputStream("src/connection/connection.properties");
+			InputStreamReader input = new InputStreamReader(getClass().getResourceAsStream("connection.properties"));
 			properties.load(input);
 
-			String connectionString = properties.getProperty(business.toString() + ".connection.string");
-			String user = properties.getProperty(business.toString() + ".connection.username");
-			String password = properties.getProperty(business.toString() + ".connection.password");
+			String connectionString = properties.getProperty(getBusiness().toString() + ".connection.string");
+			String user = properties.getProperty(getBusiness().toString() + ".connection.username");
+			String password = properties.getProperty(getBusiness().toString() + ".connection.password");
 		
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection connection = DriverManager.getConnection(connectionString, user, password);	
@@ -38,5 +43,12 @@ public class ConnectionService {
 		}
 		
 		return null;
+	}
+	
+	public Business getBusiness() {
+		return business;
+	}
+	public void setBusiness(Business business) {
+		this.business = business;
 	}
 }

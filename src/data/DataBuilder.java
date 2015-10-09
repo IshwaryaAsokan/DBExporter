@@ -10,8 +10,8 @@ import definitions.enums.Business;
 import sql.SqlService;
 
 public class DataBuilder {
-	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business){
-		ResultSet rs = SqlService.getResults(connection, fileName, business);
+	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business, SqlService sqlService){
+		ResultSet rs = sqlService.getResults(connection, fileName, business);
 		return getAttributeTypes(rs);
 	}
 	

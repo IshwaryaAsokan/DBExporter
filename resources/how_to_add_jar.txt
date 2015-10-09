@@ -1,0 +1,12 @@
+Creating a jar for any run of this program you can successfully execute locally should follow these steps.
+-Right click the project root, Export as Runnable JAR File with "Package required librariess into generated JAR"
+-Place the JAR where it needs to be run from (ex: "\\kowisa04\internetcomm\CPDB\Global\Applications\newschematabbedspreadsheetcreator\dist\")
+-Create a shortcut that points to that JAR.
+
+You will need to alter the shortcut target similar to:
+\\kowisa04\internetcomm\CPDB\Global\Applications\Java\jre8\bin\java.exe -Xmx1024m  -jar "\\kowisa04\internetcomm\CPDB\Global\Applications\newschematabbedspreadsheetcreator\dist\ANNS-XLSX.jar" > output.txt
+
+3 items to draw your attention to in the shortcut:
+1) Please ensure you are using Java 8.
+2) If you use javaw.exe instead of java.exe, your output will be suppressed.
+3) Appending "> output.txt" to the command is what causes your console log to output to a window.

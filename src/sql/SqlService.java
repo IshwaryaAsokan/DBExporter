@@ -1,22 +1,26 @@
 package sql;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
+
 import definitions.enums.Business;
 
 public class SqlService {
 	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR", "MIRA"};
-	private final static String SQL_ROOT = "src/sql/";
-	private final static String PUNI_ROOT = "src/sql/parameterized/puni/";
+	private final static String PUNI_ROOT = "parameterized/puni/";
 	
-	public static String getSqlFile(String fileName, Business business){
+	public String getSqlFile(String fileName, Business business){
 		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
 			String fileLocation = PUNI_ROOT + fileName;
 			String sql = getSqlFile(fileLocation);
@@ -24,26 +28,29 @@ public class SqlService {
 			return sql;
 		}
 		else {
-			String fileLocation = SQL_ROOT + business.toString() + "/" + fileName;
+			String fileLocation = business.toString() + "/" + fileName;
 			return getSqlFile(fileLocation);
 		}			
 	}
 	
-	public static String getSqlFile(String fileLocation) {
+	public String getSqlFile(String fileLocation) {
 		try {
-			return new String(Files.readAllBytes(Paths.get(fileLocation)));
+			InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(fileLocation));
+			BufferedReader buffReader = new BufferedReader(reader);
+			return IOUtils.toString(buffReader);
 		} catch (IOException e) {
-			System.out.println("Error reading file: " + fileLocation);
+			System.out.println("Error reading SQL: " + fileLocation);
+			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public static ResultSet getResults(Connection connection, String fileName, Business business){
+	public ResultSet getResults(Connection connection, String fileName, Business business){
 		String sql = getSqlFile(fileName, business);
 		return executeQuery(connection, sql);
 	}
 	
-	public static ResultSet getResults(Connection connection, String fileLocation){
+	public ResultSet getResults(Connection connection, String fileLocation){
 		String sql = getSqlFile(fileLocation);
 		return executeQuery(connection, sql);
 	}

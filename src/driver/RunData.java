@@ -27,6 +27,7 @@ public class RunData {
 	private Business business;
 	private OutputFormat format;
 	private Connection connection;
+	private SqlService sqlService;
 
 	private JSONObject productsJson;
 	private JSONObject itemsJson;
@@ -51,29 +52,31 @@ public class RunData {
 	public RunData(Business business, OutputFormat format){
 		setBusiness(business);
 		setFormat(format);
-		setConnection(ConnectionService.getConnection(business));
+		ConnectionService connectionService = new ConnectionService(business);
+		setConnection(connectionService.getConnection());
+		setSqlService(new SqlService());
 	}
 	
 	public void populateJson(){
-		setProductsJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(getConnection(), "all-product-attributes.sql", business)));
+		setProductsJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "all-product-attributes.sql", business)));
 		System.out.println("JSON populated: products");
 		
-		setItemsJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "all-item-attributes.sql", business)));
+		setItemsJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "all-item-attributes.sql", business)));
 		System.out.println("JSON populated: items");
-		setAdCopyJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "ad-copy.sql", business)));
+		setAdCopyJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "ad-copy.sql", business)));
 		System.out.println("JSON populated: ad-copy");
-		setCrossSellingJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "cross-selling.sql", business)));
+		setCrossSellingJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "cross-selling.sql", business)));
 		System.out.println("JSON populated: cross selling");
-		setKeywordsJson(JSONObjectBuilder.buildItemInfo(SqlService.getResults(connection, "keywords.sql", business)));
+		setKeywordsJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "keywords.sql", business)));
 		System.out.println("JSON populated: keywords");
 	}
 	
 	public void populateAttributeTypesLists(){
-		setProductAttrsList(DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business));
-		setItemAttrsList(DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business));
-		setAdCopyAttrsList(DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business));
-		setKeywordAttrsList(DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business));
-		setCrossSellingAttrsList(DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business));
+		setProductAttrsList(DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business, getSqlService()));
+		setItemAttrsList(DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business, getSqlService()));
+		setAdCopyAttrsList(DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business, getSqlService()));
+		setKeywordAttrsList(DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business, getSqlService()));
+		setCrossSellingAttrsList(DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business, getSqlService()));
 	}
 	
 	public void populateHeaders(){
@@ -115,7 +118,7 @@ public class RunData {
 	}
 	
 	public void populateMappings(){
-		this.setMappings(JSONObjectBuilder.mapItemsToProducts(SqlService.getResults(connection, "parent-child.sql", business)));
+		this.setMappings(JSONObjectBuilder.mapItemsToProducts(getSqlService().getResults(connection, "parent-child.sql", business)));
 	}
 	
 	public void applyDataTransformations(){ //rename keys, append/prepend values
@@ -152,6 +155,12 @@ public class RunData {
 	}
 	public void setConnection(Connection connection) {
 		this.connection = connection;
+	}
+	public SqlService getSqlService() {
+		return sqlService;
+	}
+	public void setSqlService(SqlService sqlService) {
+		this.sqlService = sqlService;
 	}
 	public JSONObject getProductsJson() {
 		return productsJson;
