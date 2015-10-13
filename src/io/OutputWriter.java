@@ -1,12 +1,12 @@
 package io;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,6 +28,7 @@ public class OutputWriter {
 		FileWriter fileWriter = null;
 		
 		try {
+			ensureRootDirExists();
 			fileWriter = new FileWriter(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			fileWriter.append(obj.toString(4));
 		}
@@ -50,6 +51,7 @@ public class OutputWriter {
 		FileWriter fileWriter = null;
 		
 		try {
+			ensureRootDirExists();
 			fileWriter = new FileWriter(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			if(format == OutputFormat.XML){
 				String outputValue = org.json.XML.toString(obj);
@@ -83,6 +85,7 @@ public class OutputWriter {
 	
 	public static void writeResult(List<ExcelOutputData> excelOutput, Business business, OutputFormat format){
 	    try {
+	    	ensureRootDirExists();
 			Workbook wb = new SXSSFWorkbook();
 			FileOutputStream fileOut = new FileOutputStream(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			
@@ -152,5 +155,12 @@ public class OutputWriter {
 			System.out.println("Error writing excel sheet (json)");
 			e.printStackTrace();
 		}
+	}
+	
+	private static void ensureRootDirExists(){
+    	File targetDir = new File(FILE_LOCATION_ROOT);
+    	if(!targetDir.exists() && !targetDir.mkdirs()){
+    	    throw new IllegalStateException("Couldn't create dir: " + targetDir);
+    	}
 	}
 }
