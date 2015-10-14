@@ -16,9 +16,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import data.converters.json.ConverterService;
+import data.converters.xml.ConverterService;
 import definitions.enums.Business;
 import definitions.enums.ExcelOutputFormat;
+import definitions.enums.JSONNestingLevel;
 import definitions.enums.OutputFormat;
 
 public class OutputWriter {
@@ -45,6 +46,7 @@ public class OutputWriter {
 				System.out.println("Error while flushing/closing fileWriter");
 			}
 		}
+		System.out.println("Result written");
 	}
 	
 	public static void writeResult(JSONArray obj, Business business, OutputFormat format){
@@ -81,62 +83,82 @@ public class OutputWriter {
 				System.out.println("Error while flushing/closing fileWriter");
 			}
 		}
+		System.out.println("Result written");
 	}
 	
-	public static void writeResult(List<ExcelOutputData> excelOutput, Business business, OutputFormat format){
+	public static void writeResult(JSONObject populatedProductsJson, List<ExcelOutputData> excelOutput, Business business, OutputFormat format){
 	    try {
 	    	ensureRootDirExists();
 			Workbook wb = new SXSSFWorkbook();
 			FileOutputStream fileOut = new FileOutputStream(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			
 			for(ExcelOutputData sheet : excelOutput){
-				String tabName = (String) sheet.getSheetName();
-				JSONObject data = (JSONObject) sheet.getData();
-				List<String> attrs = (List<String>) sheet.getHeaders();
+				String tabName = sheet.getSheetName();
+				String attributeName = sheet.getAttributeName();
+				List<String> attrs = sheet.getAttributes();
+				List<String> headers = sheet.getHeaders();
 				ExcelOutputFormat excelFormat = sheet.getExcelFormat();
+				JSONNestingLevel level = sheet.getLevel();
 				Sheet currentSheet = wb.createSheet(tabName);
 				
 				int columnIndex = 0;										
 				Row row = currentSheet.createRow(0);
-				for(String header : sheet.getHeaders()){ //output attributes across top before marching through objects!
+				for(String header : headers){ //output headers across top before marching through objects!
 					row.createCell(columnIndex).setCellValue(header);
 					columnIndex++;
 				}
 				int rowIndex = 1;
-				Iterator<String> iter = data.keys();
+				Iterator<String> keys = populatedProductsJson.keys();
 				
-				if(excelFormat == ExcelOutputFormat.TABLE){
-					while(iter.hasNext()){
-						String key = iter.next();
-						JSONObject obj = (JSONObject) data.get(key);
-						Row currentRow = currentSheet.createRow(rowIndex);
+				if(excelFormat == ExcelOutputFormat.TABLE){					
+					while(keys.hasNext()){
+						String key = keys.next();
+						JSONObject product = populatedProductsJson.getJSONObject(key);
+						JSONObject obj = null;
 						
-						columnIndex = 0;
-						for(String attr : attrs){			
-							if(obj.has(attr)){
-								currentRow.createCell(columnIndex).setCellValue(obj.getString(attr));
+						if(level == JSONNestingLevel.PARENT){
+							obj = product;
+						}
+						else if(level == JSONNestingLevel.CHILD){
+							if(product.has(attributeName)){
+								obj = product.getJSONObject(attributeName); 
 							}
-							columnIndex++;
-						}					
-						rowIndex++;					
+						}
+
+						if(obj != null){
+							Row currentRow = currentSheet.createRow(rowIndex);						
+							columnIndex = 0;
+							
+							for(String attr : attrs){
+								if(obj.has(attr)){ //I think this should be obj.has(attr)
+									currentRow.createCell(columnIndex).setCellValue(obj.getString(attr));
+								}
+								columnIndex++;
+							}
+							rowIndex++;
+						}
 					}
 				}
 				else if (excelFormat == ExcelOutputFormat.EAV){
-					while(iter.hasNext()){
-						String key = iter.next(); //item_no
-						JSONObject obj = (JSONObject) data.get(key);
+					while(keys.hasNext()){
+						String key = keys.next(); //item_no
+						JSONObject product = populatedProductsJson.getJSONObject(key);
 						
-						for(String attr : sheet.getAttributes()){			
-							if(obj.has(attr)){
-								String[] values = obj.getString(attr).split("\\|");
-								
-								for(String value : values){
-									if(!attr.equalsIgnoreCase("Item_No")){
-										Row currentRow = currentSheet.createRow(rowIndex);
-										currentRow.createCell(0).setCellValue(key);
-										currentRow.createCell(1).setCellValue(attr);
-										currentRow.createCell(2).setCellValue(value);
-										rowIndex++;
+						if(product.has(attributeName)){
+							JSONObject obj = product.getJSONObject(attributeName);
+							
+							for(String attr : sheet.getAttributes()){			
+								if(obj.has(attr)){
+									String[] values = obj.getString(attr).split("\\|");
+									
+									for(String value : values){
+										if(!attr.equalsIgnoreCase("Item_No")){
+											Row currentRow = currentSheet.createRow(rowIndex);
+											currentRow.createCell(0).setCellValue(key);
+											currentRow.createCell(1).setCellValue(attr);
+											currentRow.createCell(2).setCellValue(value);
+											rowIndex++;
+										}
 									}
 								}
 							}
@@ -155,6 +177,7 @@ public class OutputWriter {
 			System.out.println("Error writing excel sheet (json)");
 			e.printStackTrace();
 		}
+	    System.out.println("Result written");
 	}
 	
 	private static void ensureRootDirExists(){

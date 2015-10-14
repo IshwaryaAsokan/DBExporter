@@ -82,19 +82,9 @@ public class JSONObjectBuilder {
 					String childItemNo = keys.next();
 					String attachInfoTo = mapToParent ? mappings.get(childItemNo) : childItemNo;
 					
-					if(products.has(attachInfoTo)){
+					if(products.has(attachInfoTo) && childInfo.has(childItemNo)){
 						JSONObject parentJson = products.getJSONObject(attachInfoTo);
-						
-						if(parentJson.has(childLabel)){
-							JSONArray siblings = parentJson.getJSONArray(childLabel);
-							siblings.put(childInfo.get(childItemNo));
-							parentJson.put(childLabel, siblings);
-						}
-						else {
-							JSONArray childItems = new JSONArray();
-							childItems.put(childInfo.get(childItemNo));
-							parentJson.put(childLabel, childItems);
-						}
+						parentJson.put(childLabel, childInfo.get(childItemNo));
 					}
 				}
 			}
@@ -106,36 +96,38 @@ public class JSONObjectBuilder {
 		return products;		
 	}
 	
-	public static JSONObject mergeJsonAttributes(JSONObject result, JSONObject toMerge){
+	public static JSONObject subsumeAttributes(JSONObject obj, String attribute){
 		try {
-			Iterator<String> keys = toMerge.keys();
-			
+			Iterator<String> keys = obj.keys();
 			while(keys.hasNext()){
-				String itemNo = keys.next();
-				
-				if(result.has(itemNo) && toMerge.has(itemNo)){
-					JSONObject resultInfo = result.getJSONObject(itemNo);
-					JSONObject toMergeInfo = toMerge.getJSONObject(itemNo);
+				String key = keys.next();
+				if(obj.has(key)){
+					JSONObject childObj = obj.getJSONObject(key);
 					
-					Iterator<String> attrs = toMergeInfo.keys();
-					while(attrs.hasNext()){
-						String attr = attrs.next();
-						
-						if(resultInfo.has(attr) && !"Item_No".equalsIgnoreCase(attr)){
-							System.out.println("Error in trying to merge JSONObjects. Conflicting attribute: " + attr);
+					if(childObj.has(attribute)){
+						JSONObject attributeObj = childObj.getJSONObject(attribute);
+						Iterator<String> attributeKeys = attributeObj.keys();
+						while(attributeKeys.hasNext()){
+							String attributeKey = attributeKeys.next();
+							if(attributeObj.has(attributeKey)){
+								String attributeValue = attributeObj.getString(attributeKey);
+								if(!childObj.has(attributeKey)){
+									childObj.put(attributeKey, attributeValue);
+								}
+								else{
+									System.out.println("Conflicting attribute name [subsumeAttributes] " + attributeKey + " - obj: " + childObj);
+								}
+							}
 						}
-						else {
-							resultInfo.put(attr, toMergeInfo.get(attr));							
-						}
-					}
-					result.put(itemNo, resultInfo);
-				}
-			}		
+					} //end: childObj.has(attribute)
+					obj.put(key, childObj);
+				}				
+			}
 		} catch (JSONException e) {
-			System.out.println("Error attempting to merge JSONObjects [mergeJsonAttributes]");
+			System.out.println("Error attempting to subsume attribute [subsumeAttributes]");
 			e.printStackTrace();
-		}
+		}		
 		
-		return result;
+		return obj;
 	}
 }

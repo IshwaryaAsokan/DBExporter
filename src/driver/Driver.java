@@ -3,43 +3,39 @@ package driver;
 import io.CouchWriter;
 import io.ExcelOutputData;
 import io.OutputWriter;
+
 import java.util.List;
+
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import data.JSONObjectBuilder;
-import data.converters.json.JSONConverter;
-import data.converters.json.ConverterService;
+
+import data.converters.xml.ConverterService;
+import data.converters.xml.JSONConverter;
+import data.services.ExcelDataService;
+import data.services.UnalteredJSONService;
 import definitions.enums.Business;
 import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.NBKR, OutputFormat.XLSX);
+		runBuilder(Business.ANNS, OutputFormat.XLSX);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
-		RunData runData = new RunData(business, format);
-		System.out.println("Connection made");
-		runData.populateJson();
-		System.out.println("JSON populated");
-
+		UnalteredJSONService getDataService = new UnalteredJSONService(business);
+		JSONObject populatedProductsJson = getDataService.getPopulatedJSON();
+						
 		if(format == OutputFormat.JSON || format == OutputFormat.XML || format == OutputFormat.COUCHDB){
-			runData.populateMappings();
-			List<Triple<String,JSONObject,Boolean>> children = runData.getJsonOutputFormat();			
-
 			if(format == OutputFormat.JSON){
-				runData.applyDataTransformations();
-				JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
+				//changeDataService.applyDataTransformations();
 				OutputWriter.writeResult(populatedProductsJson, business, format);
 			}
 			else if(format == OutputFormat.COUCHDB){
-				JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
 				CouchWriter writer = new CouchWriter();
 				writer.writeToCouch(populatedProductsJson);
 			}
 			else { //format == OutputFormat.XML
-				JSONObject populatedProductsJson = JSONObjectBuilder.buildProducts(runData.getProductsJson(), runData.getMappings(), children);
 				JSONConverter transformer = ConverterService.getService(business);
 				JSONArray skus = transformer.convert(populatedProductsJson);
 				OutputWriter.writeResult(skus, business, format);
@@ -47,19 +43,16 @@ public class Driver {
 			
 		}
 		else{ //xls
-			runData.populateAttributeTypesLists();
-			System.out.println("Attribute types defined");
-			runData.populateHeaders();
-			System.out.println("Headers populated");
-			List<ExcelOutputData> excelOutput = runData.getExcelOutputFormat();			
-			System.out.println("Excel output defined");
+			ExcelDataService excelDataService = new ExcelDataService(business, format);
+			
+			excelDataService.populateAttributeTypesLists();			
+			excelDataService.populateHeaders();
+			List<ExcelOutputData> excelOutput = excelDataService.getExcelOutputFormat();						
 
-			OutputWriter.writeResult(excelOutput, business, format);
-			System.out.println("Result written");
+			OutputWriter.writeResult(populatedProductsJson, excelOutput, business, format);
+			excelDataService.closeConnection();
 		}
 
-		//close connection
-		runData.closeConnection();
 		System.out.println("Done!");		
 	}
 }

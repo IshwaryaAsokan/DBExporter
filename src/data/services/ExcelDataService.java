@@ -1,4 +1,4 @@
-package driver;
+package data.services;
 
 import io.ExcelOutputData;
 
@@ -20,20 +20,15 @@ import data.alteration.values.DataValueTransformer;
 import data.alteration.values.Transformation;
 import definitions.enums.Business;
 import definitions.enums.ExcelOutputFormat;
+import definitions.enums.JSONNestingLevel;
 import definitions.enums.JsonTransformationType;
 import definitions.enums.OutputFormat;
 
-public class RunData {
+public class ExcelDataService {
 	private Business business;
 	private OutputFormat format;
 	private Connection connection;
 	private SqlService sqlService;
-
-	private JSONObject productsJson;
-	private JSONObject itemsJson;
-	private JSONObject adCopyJson;
-	private JSONObject crossSellingJson;
-	private JSONObject keywordsJson;
 	
 	private List<String> productAttrsList;
 	private List<String> itemAttrsList;
@@ -46,29 +41,13 @@ public class RunData {
 	private List<String> adCopyHeaders;
 	private List<String> keywordHeaders;
 	private List<String> crossSellingHeaders;
-	
-	private Map<String,String> mappings;
 
-	public RunData(Business business, OutputFormat format){
+	public ExcelDataService(Business business, OutputFormat format){
 		setBusiness(business);
 		setFormat(format);
 		ConnectionService connectionService = new ConnectionService(business);
 		setConnection(connectionService.getConnection());
 		setSqlService(new SqlService());
-	}
-	
-	public void populateJson(){
-		setProductsJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "all-product-attributes.sql", business)));
-		System.out.println("JSON populated: products");
-		
-		setItemsJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "all-item-attributes.sql", business)));
-		System.out.println("JSON populated: items");
-		setAdCopyJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "ad-copy.sql", business)));
-		System.out.println("JSON populated: ad-copy");
-		setCrossSellingJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "cross-selling.sql", business)));
-		System.out.println("JSON populated: cross selling");
-		setKeywordsJson(JSONObjectBuilder.buildItemInfo(getSqlService().getResults(connection, "keywords.sql", business)));
-		System.out.println("JSON populated: keywords");
 	}
 	
 	public void populateAttributeTypesLists(){
@@ -77,6 +56,7 @@ public class RunData {
 		setAdCopyAttrsList(DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business, getSqlService()));
 		setKeywordAttrsList(DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business, getSqlService()));
 		setCrossSellingAttrsList(DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business, getSqlService()));
+		System.out.println("Attribute types defined");
 	}
 	
 	public void populateHeaders(){
@@ -87,53 +67,53 @@ public class RunData {
 		setItemAttrHeaders(getItemAttrsList());
 		setAdCopyHeaders(getAdCopyAttrsList());
 		setKeywordHeaders(getKeywordAttrsList());
+		System.out.println("Headers populated");
 	}
 	
 	public List<ExcelOutputData> getExcelOutputFormat(){
 		List<ExcelOutputData> excelOutput = new ArrayList<ExcelOutputData>();
 		
-		excelOutput.add(new ExcelOutputData("Products", getProductsJson(), getProductAttrsList(), getProductAttrHeaders(), ExcelOutputFormat.TABLE));
-		excelOutput.add(new ExcelOutputData("Items", getItemsJson(), getItemAttrsList(), getItemAttrHeaders(), ExcelOutputFormat.TABLE));
-		excelOutput.add(new ExcelOutputData("Ad Copy", getAdCopyJson(), getAdCopyAttrsList(), getAdCopyHeaders(), ExcelOutputFormat.TABLE));
-		excelOutput.add(new ExcelOutputData("Cross Selling", getCrossSellingJson(), getCrossSellingAttrsList(), getCrossSellingHeaders(), ExcelOutputFormat.EAV));
-		excelOutput.add(new ExcelOutputData("Keywords", getKeywordsJson(), getKeywordAttrsList(), getKeywordHeaders(), ExcelOutputFormat.TABLE));
-		
+		excelOutput.add(new ExcelOutputData("Products", "products", getProductAttrsList(), getProductAttrHeaders(), ExcelOutputFormat.TABLE, JSONNestingLevel.PARENT));
+		excelOutput.add(new ExcelOutputData("Items", "skus", getItemAttrsList(), getItemAttrHeaders(), ExcelOutputFormat.TABLE, JSONNestingLevel.CHILD));
+		excelOutput.add(new ExcelOutputData("Ad Copy", "adCopy", getAdCopyAttrsList(), getAdCopyHeaders(), ExcelOutputFormat.TABLE, JSONNestingLevel.CHILD));
+		excelOutput.add(new ExcelOutputData("Cross Selling", "crossSelling", getCrossSellingAttrsList(), getCrossSellingHeaders(), ExcelOutputFormat.EAV, JSONNestingLevel.CHILD));
+		excelOutput.add(new ExcelOutputData("Keywords", "keywords", getKeywordAttrsList(), getKeywordHeaders(), ExcelOutputFormat.TABLE, JSONNestingLevel.CHILD));
+
+		System.out.println("Excel output defined");
 		return excelOutput;
 	}
+
+	//this needs to be moved
+//	public List<Triple<String,JSONObject,Boolean>> getJsonOutputFormat(){
+//		List<Triple<String,JSONObject,Boolean>> children = new ArrayList<Triple<String,JSONObject,Boolean>>();
+//		
+//		children.add(Triple.of("skus", getItemsJson(), Boolean.TRUE));
+//		children.add(Triple.of("adCopy", getAdCopyJson(), Boolean.FALSE));
+//		children.add(Triple.of("crossSelling", getCrossSellingJson(), Boolean.FALSE));
+//		
+//		//merge keywords into productsJson
+//		JSONObject outputData = JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson());
+//		
+//		
+//		setProductsJson(outputData);
+//		
+//		return children;
+//	}
 	
-	public List<Triple<String,JSONObject,Boolean>> getJsonOutputFormat(){
-		List<Triple<String,JSONObject,Boolean>> children = new ArrayList<Triple<String,JSONObject,Boolean>>();
-		
-		children.add(Triple.of("skus", getItemsJson(), Boolean.TRUE));
-		children.add(Triple.of("adCopy", getAdCopyJson(), Boolean.FALSE));
-		children.add(Triple.of("crossSelling", getCrossSellingJson(), Boolean.FALSE));
-		
-		//merge keywords into productsJson
-		JSONObject outputData = JSONObjectBuilder.mergeJsonAttributes(getProductsJson(), getKeywordsJson());
-		
-		
-		setProductsJson(outputData);
-		
-		return children;
-	}
-	
-	public void populateMappings(){
-		this.setMappings(JSONObjectBuilder.mapItemsToProducts(getSqlService().getResults(connection, "parent-child.sql", business)));
-	}
-	
-	public void applyDataTransformations(){ //rename keys, append/prepend values
-		List<Transformation> transformations = new ArrayList<Transformation>();
-		transformations.add(new Transformation(JsonTransformationType.PREPEND, "JPG_Photo_Name", "www."));
-		transformations.add(new Transformation(JsonTransformationType.APPEND, "JPG_Photo_Name", "--testing the appending!"));
-		transformations.add(new Transformation(JsonTransformationType.NEW_KEY, "JPG_Photo_Name", "JPG"));
-		DataValueTransformer.transform(getProductsJson(), transformations);
-	}
+	//this needs to be moved
+//	public void applyDataTransformations(){ //rename keys, append/prepend values
+//		List<Transformation> transformations = new ArrayList<Transformation>();
+//		transformations.add(new Transformation(JsonTransformationType.PREPEND, "JPG_Photo_Name", "www."));
+//		transformations.add(new Transformation(JsonTransformationType.APPEND, "JPG_Photo_Name", "--testing the appending!"));
+//		transformations.add(new Transformation(JsonTransformationType.NEW_KEY, "JPG_Photo_Name", "JPG"));
+//		DataValueTransformer.transform(getProductsJson(), transformations);
+//	}
 	
 	public void closeConnection(){
 		try {
 			getConnection().close();
 		} catch (SQLException e) {
-			System.out.println("Failed to close DB connection.");
+			System.out.println("Failed to close DB connection [DataManipulationService].");
 			e.printStackTrace();
 		}
 	}
@@ -161,36 +141,6 @@ public class RunData {
 	}
 	public void setSqlService(SqlService sqlService) {
 		this.sqlService = sqlService;
-	}
-	public JSONObject getProductsJson() {
-		return productsJson;
-	}
-	public void setProductsJson(JSONObject productsJson) {
-		this.productsJson = productsJson;
-	}
-	public JSONObject getItemsJson() {
-		return itemsJson;
-	}
-	public void setItemsJson(JSONObject itemsJson) {
-		this.itemsJson = itemsJson;
-	}
-	public JSONObject getAdCopyJson() {
-		return adCopyJson;
-	}
-	public void setAdCopyJson(JSONObject adCopyJson) {
-		this.adCopyJson = adCopyJson;
-	}
-	public JSONObject getCrossSellingJson() {
-		return crossSellingJson;
-	}
-	public void setCrossSellingJson(JSONObject crossSellingJson) {
-		this.crossSellingJson = crossSellingJson;
-	}
-	public JSONObject getKeywordsJson() {
-		return keywordsJson;
-	}
-	public void setKeywordsJson(JSONObject keywordsJson) {
-		this.keywordsJson = keywordsJson;
 	}
 	public List<String> getProductAttrsList() {
 		return productAttrsList;
@@ -251,11 +201,5 @@ public class RunData {
 	}
 	public void setCrossSellingHeaders(List<String> crossSellingHeaders) {
 		this.crossSellingHeaders = crossSellingHeaders;
-	}
-	public Map<String, String> getMappings() {
-		return mappings;
-	}
-	public void setMappings(Map<String, String> mappings) {
-		this.mappings = mappings;
 	}
 }
