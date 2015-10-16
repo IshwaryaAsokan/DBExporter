@@ -116,27 +116,50 @@ public class OutputWriter {
 						JSONObject product = populatedProductsJson.getJSONObject(key);
 						JSONObject obj = null;
 						
-						if(level == JSONNestingLevel.PARENT){
-							obj = product;
-						}
-						else if(level == JSONNestingLevel.CHILD){
-							if(product.has(attributeName)){
-								obj = product.getJSONObject(attributeName); 
+						if(!tabName.equalsIgnoreCase("Items")){
+							if(level == JSONNestingLevel.PARENT){
+								obj = product;
 							}
-						}
-
-						if(obj != null){
-							Row currentRow = currentSheet.createRow(rowIndex);						
-							columnIndex = 0;
-							
-							for(String attr : attrs){
-								if(obj.has(attr)){ //I think this should be obj.has(attr)
-									currentRow.createCell(columnIndex).setCellValue(obj.getString(attr));
+							else if(level == JSONNestingLevel.CHILD){
+								if(product.has(attributeName)){
+									obj = product.getJSONObject(attributeName);
 								}
-								columnIndex++;
 							}
-							rowIndex++;
+
+							if(obj != null){
+								Row currentRow = currentSheet.createRow(rowIndex);						
+								columnIndex = 0;
+								
+								for(String attr : attrs){
+									if(obj.has(attr)){
+										currentRow.createCell(columnIndex).setCellValue(obj.getString(attr));
+									}
+									columnIndex++;
+								}
+								rowIndex++;
+							}
 						}
+						else { //skus
+							if(product.has(attributeName)){
+								JSONArray skusArr = product.getJSONArray("skus");
+								if(skusArr.length() > 0){
+									
+									for(int index = 0; index < skusArr.length(); index++){
+										JSONObject sku = skusArr.getJSONObject(index);
+										Row currentRow = currentSheet.createRow(rowIndex);
+										columnIndex = 0;
+										
+										for(String attr : attrs){
+											if(sku.has(attr)){
+												currentRow.createCell(columnIndex).setCellValue(sku.getString(attr));
+											}										
+											columnIndex++;
+										} //end attr for loop
+										rowIndex++;
+									} //end skus loop
+								}
+							}
+						} //end skus else
 					}
 				}
 				else if (excelFormat == ExcelOutputFormat.EAV){

@@ -83,8 +83,16 @@ public class JSONObjectBuilder {
 					String attachInfoTo = mapToParent ? mappings.get(childItemNo) : childItemNo;
 					
 					if(products.has(attachInfoTo) && childInfo.has(childItemNo)){
-						JSONObject parentJson = products.getJSONObject(attachInfoTo);
-						parentJson.put(childLabel, childInfo.get(childItemNo));
+						if(!mapToParent){
+							JSONObject parentJson = products.getJSONObject(attachInfoTo);
+							parentJson.put(childLabel, childInfo.get(childItemNo));
+						}
+						else { //skus
+							JSONObject parentJson = products.getJSONObject(attachInfoTo);
+							JSONArray childArr = parentJson.has(childLabel) ? parentJson.getJSONArray(childLabel) : new JSONArray();							
+							childArr.put(childInfo.get(childItemNo));
+							parentJson.put(childLabel, childArr);
+						}
 					}
 				}
 			}

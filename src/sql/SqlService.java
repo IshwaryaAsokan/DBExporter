@@ -41,6 +41,8 @@ public class SqlService {
 		} catch (IOException e) {
 			System.out.println("Error reading SQL: " + fileLocation);
 			e.printStackTrace();
+		} catch (NullPointerException npe) {
+			System.out.println("There is no file at: " + fileLocation);
 		}
 		return null;
 	}
