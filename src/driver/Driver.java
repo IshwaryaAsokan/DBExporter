@@ -15,14 +15,19 @@ import data.converters.xml.JSONConverter;
 import data.services.ExcelDataService;
 import data.services.UnalteredJSONService;
 import definitions.enums.Business;
+import definitions.enums.BusinessPurpose;
 import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.ANNS, OutputFormat.XLSX);
+		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
+		runBuilder(business, format, null);
+	}
+	
+	private static void runBuilder(Business business, OutputFormat format, BusinessPurpose purpose){
 		UnalteredJSONService getDataService = new UnalteredJSONService(business);
 		JSONObject populatedProductsJson = getDataService.getPopulatedJSON();
 						
@@ -36,9 +41,9 @@ public class Driver {
 				writer.writeToCouch(populatedProductsJson);
 			}
 			else { //format == OutputFormat.XML
-				JSONConverter transformer = ConverterService.getService(business);
+				JSONConverter transformer = ConverterService.getService(business, purpose);
 				JSONArray skus = transformer.convert(populatedProductsJson);
-				OutputWriter.writeResult(skus, business, format);
+				OutputWriter.writeResult(skus, business, format, purpose);
 			}
 			
 		}

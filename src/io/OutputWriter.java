@@ -17,7 +17,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import data.converters.xml.ConverterService;
+import data.converters.xml.JSONConverter;
 import definitions.enums.Business;
+import definitions.enums.BusinessPurpose;
 import definitions.enums.ExcelOutputFormat;
 import definitions.enums.JSONNestingLevel;
 import definitions.enums.OutputFormat;
@@ -49,7 +51,7 @@ public class OutputWriter {
 		System.out.println("Result written");
 	}
 	
-	public static void writeResult(JSONArray obj, Business business, OutputFormat format){
+	public static void writeResult(JSONArray obj, Business business, OutputFormat format, BusinessPurpose purpose){
 		FileWriter fileWriter = null;
 		
 		try {
@@ -57,13 +59,14 @@ public class OutputWriter {
 			fileWriter = new FileWriter(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
 			if(format == OutputFormat.XML){
 				String outputValue = org.json.XML.toString(obj);
+				JSONConverter converterService = ConverterService.getService(business, purpose);
 
-				List<Pair<String, String>> replacements = ConverterService.getService(business).getReplacements();
+				List<Pair<String, String>> replacements = converterService.getReplacements();
 				for(Pair<String, String> replacement : replacements){
 					outputValue = outputValue.replace(replacement.getLeft(), replacement.getRight());
 				}
 										
-				outputValue = ConverterService.getService(business).getStartXmlWrapper() + outputValue + ConverterService.getService(business).getEndXmlWrapper();				
+				outputValue = converterService.getStartXmlWrapper() + outputValue + converterService.getEndXmlWrapper();				
 				fileWriter.append(outputValue);
 			}
 			else{ //json
