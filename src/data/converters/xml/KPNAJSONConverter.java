@@ -3,6 +3,7 @@ package data.converters.xml;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,7 +15,8 @@ import org.json.JSONObject;
 
 public class KPNAJSONConverter extends JSONConverter {
 	
-	private final static String EXCLUDED_FINISH_COLOR = "Indicates No Finish";
+	private final static String[] EXCLUDED_COLORS = {"Indicates No Finish", "Indicates No finish", "Not Applicable", "Not Applicable "};
+	private final static String EXCLUDED_BRAND = "no brand name";
 
 	@Override
 	public JSONArray convert(JSONObject originalJson) {
@@ -43,14 +45,14 @@ public class KPNAJSONConverter extends JSONConverter {
 		List<JSONObject> products = new ArrayList<JSONObject>();
 		
 		try {
-			String productTitleDesc = getValue(json, "$.DESCRIPTION_PRODUCT");
-			String brandNameShowroom = getValue(json, "$.BRAND_NAME_SHOWROOM");
+			String productTitleDesc = getValue(json, "$.Description_Product");
+			String brandNameShowroom = getValue(json, "$.Brand_Name_Showroom");
 			String defaultCategory = getValue(json, "$.ATG_Default_Category");
-			String narrativeDesc = getValue(json, "$.adCopy.NARRATIVE_DESCRIPTION");
-			String productId = getValue(json, "$.adCopy.Item_No");
+			String narrativeDesc = getValue(json, "$.adCopy.Narrative_Description");
+			String productId = getValue(json, "$.Item_No");
 			
 			JSONArray bulletPoints = new JSONArray();
-			String[] bulletTitles = {"WEB_FEATURES_", "WEB_TECHNOLOGY_", "WEB_MATERIAL_", "WEB_INSTALLATION_", "WEB_REBATES_"}; 
+			String[] bulletTitles = {"Web_Features_", "Web_Technology_", "Web_Material_", "Web_Installation_", "Web_Rebates_"}; 
 			String[] bulletNumbers = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10"};
 			for (String bTitle : bulletTitles){
 				for(String bNumber : bulletNumbers){
@@ -68,7 +70,7 @@ public class KPNAJSONConverter extends JSONConverter {
 				JSONObject product = new JSONObject();
 				product.put("g:brand", "KOHLER");
 				product.put("g:product_line", removeTmAndR(brandNameShowroom));
-				product.put("g:product_type", defaultCategory);
+				product.put("g:product_type", defaultCategory); 
 				product.put("g:description", narrativeDesc);
 				product.put("g:bullet_point", bulletPoints);
 				product.put("g:item_group_id", productId);
@@ -77,12 +79,22 @@ public class KPNAJSONConverter extends JSONConverter {
 				product.put("g:id", skuCode);
 				product.put("g:mpn", skuCode);
 
-				product.put("g:suggested_retail_price", getValue(sku, "$.LIST_PRICE"));
-				product.put("g:gtin", "00" + getValue(sku, "$.UPC_Code"));
+				product.put("g:suggested_retail_price", getValue(sku, "$.List_Price"));
+				String upcCode = getValue(sku, "$.UPC_Code");
+				if(upcCode != null){
+					product.put("g:gtin", "00" + upcCode);
+				}
+				else {
+					System.out.println("No UPC Code for product: " + skuCode);
+					System.out.println(sku);
+				}
 				
-				String colorFinish = getValue(sku, "$.COLOR_FINISH_NAME");
-				if(StringUtils.isNotEmpty(colorFinish) && !colorFinish.equalsIgnoreCase(EXCLUDED_FINISH_COLOR)){
+				String colorFinish = getValue(sku, "$.Color_Finish_Name");
+				if(StringUtils.isNotEmpty(colorFinish) && !Arrays.asList(EXCLUDED_COLORS).contains(colorFinish)){
 						product.put("g:color", colorFinish);
+				}
+				else {
+					colorFinish = StringUtils.EMPTY;
 				}
 
 				String imgItemIso = getValue(sku, "$.IMG_ITEM_ISO");
@@ -99,13 +111,12 @@ public class KPNAJSONConverter extends JSONConverter {
 				}
 				
 				String productTitle = "KOHLER " + skuCode + " " + productTitleDesc;
-				if(StringUtils.isNotEmpty(colorFinish) && !colorFinish.equalsIgnoreCase("Not Applicable") && !colorFinish.equalsIgnoreCase("null")){
+				if(StringUtils.isNotEmpty(colorFinish)){
 					productTitle = productTitle + " - " + colorFinish;
 				}
-				product.put("g:title", productTitle);
+				product.put("g:title", productTitle); //yes, but null color
 				
-				products.add(product);
-				System.out.println(product);
+				products.add(product);				
 			}
 		} catch (JSONException e) {
 			System.out.println("Error creating product.");
@@ -138,7 +149,7 @@ public class KPNAJSONConverter extends JSONConverter {
 	}
 
 	private static String removeTmAndR(String text){
-		if(text == null || text.equalsIgnoreCase("No Brand")){
+		if(text == null || text.equalsIgnoreCase(EXCLUDED_BRAND)){
 			return StringUtils.EMPTY;
 		}
 		else {

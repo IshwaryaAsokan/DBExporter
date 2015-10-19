@@ -4,9 +4,9 @@ import io.CouchWriter;
 import io.ExcelOutputData;
 import io.OutputWriter;
 
+import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -58,6 +58,6 @@ public class Driver {
 			excelDataService.closeConnection();
 		}
 
-		System.out.println("Done!");		
+		System.out.println("Done!");
 	}
 }

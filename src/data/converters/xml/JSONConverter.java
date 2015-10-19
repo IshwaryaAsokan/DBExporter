@@ -22,7 +22,7 @@ public abstract class JSONConverter {
 			return retVal;
 		}
 		catch(PathNotFoundException e){
-			System.out.println("Missing path " + path + " in " + json.toString());
+			//System.out.println("Missing path " + path + " in " + json.toString());
 		}
 		return null;
 	}
