@@ -86,7 +86,6 @@ public class KPNAJSONConverter extends JSONConverter {
 				}
 				else {
 					System.out.println("No UPC Code for product: " + skuCode);
-					System.out.println(sku);
 				}
 				
 				String colorFinish = getValue(sku, "$.Color_Finish_Name");

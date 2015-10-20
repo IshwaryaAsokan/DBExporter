@@ -51,6 +51,14 @@ and II.ITEM_NO in
             and II.ITEM_INFO_ID = IA.ITEM_INFO_ID
             and AT.ATTRIBUTE_TYPE_ID = 2029206
             and ia.value = 'Kohler Store')),
+    WEB_INCLUDED as
+	    (select II2.ITEM_NO --1=parent, 2=child
+	    from CB02KPNA.ITEM_INFO ii1, CB02KPNA.ITEM_GROUPS ig, CB02KPNA.ITEM_INFO ii2, CB02KPNA.ITEM_ATTRIBUTES ia
+	    where IG.ITEM_GROUP_ID = II1.ITEM_INFO_ID
+	    and IG.ITEM_INFO_ID = II2.ITEM_INFO_ID
+	    and IA.ITEM_INFO_ID = II1.ITEM_INFO_ID
+	    and IA.ATTRIBUTE_TYPE_ID = 1046
+	    and IA.VALUE = 'Yes'),
     BAD_SECTION as 
         (select ii2.item_no
         from CB02KPNA.ITEM_INFO ii1, CB02KPNA.ITEM_INFO ii2, CB02KPNA.ITEM_GROUPS ig
@@ -85,5 +93,6 @@ and II.ITEM_NO in
     minus select * from ATG_INACTVE
     minus select * from KOHLER_STORE_ITEMS
     minus select * from BAD_SECTION
-    intersect select * from SOLD_IN_USA)
+    intersect select * from SOLD_IN_USA
+    intersect select * from WEB_INCLUDED)
 order by IA.ITEM_INFO_ID
