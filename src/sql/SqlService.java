@@ -59,10 +59,8 @@ public class SqlService {
 	
 	private static ResultSet executeQuery(Connection connection, String sql){
 		if(sql != null){
-			Statement statement;
-			
 			try {
-				statement = connection.createStatement();
+				Statement statement = connection.createStatement();
 				statement.execute(sql);
 				return statement.getResultSet();
 			} catch (SQLException e) {
