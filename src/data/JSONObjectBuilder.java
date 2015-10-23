@@ -31,6 +31,7 @@ public class JSONObjectBuilder {
 					}
 					else {
 						entry.put(attrType, value);
+						//checkForUnicodeBlockCharacters(itemNo, attrType, value);
 						allData.put(itemNo, entry);
 					}
 				}
@@ -38,6 +39,7 @@ public class JSONObjectBuilder {
 					JSONObject newData = new JSONObject();
 					newData.put(attrType, value);
 					newData.put("Item_No", itemNo);
+					//checkForUnicodeBlockCharacters(itemNo, attrType, value);
 					allData.put(itemNo, newData);
 				}
 			}			
@@ -137,5 +139,14 @@ public class JSONObjectBuilder {
 		}		
 		
 		return obj;
+	}
+	
+	//a debugging aid
+	private static void checkForUnicodeBlockCharacters(String itemNo, String type, String value){
+		for(int index = 0; index < value.length(); index++){
+			if(Character.UnicodeBlock.of(value.charAt(index))!=Character.UnicodeBlock.BASIC_LATIN){
+				System.out.println("Illegal character in " + value + " - item: " + itemNo + ", attribute: " + type);
+			}
+		}
 	}
 }
