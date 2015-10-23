@@ -16,7 +16,7 @@ import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.STRL, OutputFormat.XML, BusinessPurpose.PRICE_SPIDER);
+		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){

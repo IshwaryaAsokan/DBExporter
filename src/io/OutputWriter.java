@@ -1,9 +1,12 @@
 package io;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,17 +55,17 @@ public class OutputWriter {
 	}
 	
 	public static void writeResult(JSONArray obj, Business business, OutputFormat format, BusinessPurpose purpose){
+		String fileDestination = FILE_LOCATION_ROOT + business.toString() + "." + format.toString();
 		FileWriter fileWriter = null;
 		
 		try {
 			ensureRootDirExists();
-			fileWriter = new FileWriter(FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
+			fileWriter = new FileWriter(fileDestination);
 			if(format == OutputFormat.XML){
 				String outputValue = org.json.XML.toString(obj);
 				JSONConverter converterService = ConverterService.getService(business, purpose);
 
-				List<Pair<String, String>> replacements = converterService.getReplacements();
-				for(Pair<String, String> replacement : replacements){
+				for(Pair<String, String> replacement : converterService.getReplacements()){
 					outputValue = outputValue.replace(replacement.getLeft(), replacement.getRight());
 				}
 										
@@ -74,7 +77,7 @@ public class OutputWriter {
 			}
 		}
 		catch (Exception e) {
-			System.out.println("Error writing out file: " + FILE_LOCATION_ROOT + business.toString() + "." + format.toString());
+			System.out.println("Error writing out file: " + fileDestination);
 			System.out.println(e.toString());
 		}
 		finally {
@@ -83,7 +86,8 @@ public class OutputWriter {
 				fileWriter.close();
 			}
 			catch (IOException e){
-				System.out.println("Error while flushing/closing fileWriter");
+				System.out.println("Error while flushing/closing writer (FileOutputStream)");
+				e.printStackTrace();
 			}
 		}
 		System.out.println("Result written");
