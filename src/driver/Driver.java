@@ -16,7 +16,7 @@ import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
+		runBuilder(Business.STRL, OutputFormat.XML, BusinessPurpose.PRICE_SPIDER);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
@@ -33,7 +33,7 @@ public class Driver {
 				OutputWriter.writeResult(populatedProductsJson, business, format);
 			}
 			else if(format == OutputFormat.COUCHDB){
-				CouchWriter writer = new CouchWriter();
+				CouchWriter writer = new CouchWriter(business);
 				writer.writeToCouch(populatedProductsJson);
 			}
 			else { //format == OutputFormat.XML
