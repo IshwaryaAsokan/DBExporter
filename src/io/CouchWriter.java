@@ -13,6 +13,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import definitions.enums.Business;
+
 public class CouchWriter {
 	private CouchDbProperties properties;
 	private CouchDbClient dbClient;
@@ -36,12 +38,12 @@ public class CouchWriter {
 		System.out.println("End write to couch");
 	}
 	
-	public CouchWriter(){
+	public CouchWriter(Business biz){
 		properties = new CouchDbProperties();
 		properties.setHost("127.0.0.1");
 		properties.setPort(5984);
 		properties.setProtocol("http");
-		properties.setDbName("products");
+		properties.setDbName("products-" + biz.toString().toLowerCase());
 		properties.setCreateDbIfNotExist(true);
 
 		dbClient = new CouchDbClient(properties);
@@ -54,11 +56,10 @@ public class CouchWriter {
 			while(iter.hasNext()){
 				String key = iter.next();
 				JSONObject product = data.getJSONObject(key);				
-				String itemNo = "K-" + product.getString("Item_No");
 				
 				Iterator<String> attrs = product.keys();
 				Map<String, Object> map = new HashMap<>();
-				map.put("_id", itemNo);
+				map.put("_id", product.getString("Item_No"));
 				
 				while(attrs.hasNext()){
 					String attr = attrs.next();
