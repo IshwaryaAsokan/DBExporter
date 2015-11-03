@@ -29,7 +29,7 @@ and ii.item_no in (
         and II1.ITEM_INFO_ID in (
             select II.ITEM_INFO_ID
             from CB02STRL.KEYWORD_PHRASES kp, CB02STRL.ITEM_INFO ii
-            where (KP.PHRASE = 'US')
+            where (KP.PHRASE <> 'Canada')
             and KP.ITEM_INFO_ID = II.ITEM_INFO_ID))
     select * from WEB_INCLUDED intersect 
     select * from PRICE_SPIDER_INCLUDED intersect
