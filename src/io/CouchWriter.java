@@ -58,7 +58,16 @@ public class CouchWriter {
 				JSONObject product = data.getJSONObject(key);
 				product.put("_id", product.getString("Item_No"));
 				
-				getDbClient().save(product);
+				Iterator<String> attrs = product.keys();
+				Map<String, Object> map = new HashMap<>();
+				map.put("_id", product.getString("Item_No"));
+				
+				while(attrs.hasNext()){
+					String attr = attrs.next();
+					map.put(attr, product.get(attr));
+				}
+				
+				getDbClient().save(map);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
