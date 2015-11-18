@@ -18,7 +18,7 @@ and II.ITEM_NO in (
         (select II.ITEM_NO
         from CB02STRL.ITEM_INFO ii
         where II.ITEM_TYPE = 'I'),
-    RELEASED as
+    UNRELEASED as
         (select ii1.item_no
         from CB02STRL.ITEM_INFO ii1, CB02STRL.ITEM_INFO ii2, CB02STRL.item_attributes ia, CB02STRL.attribute_types at, CB02STRL.ITEM_GROUPS ig
         where IG.ITEM_INFO_ID = II1.ITEM_INFO_ID
@@ -27,8 +27,7 @@ and II.ITEM_NO in (
         and II1.ITEM_TYPE = 'I'
         and II1.ITEM_INFO_ID = IA.ITEM_INFO_ID
         and AT.ATTRIBUTE_TYPE_ID = 2001056
-        and IA.VALUE <> 'No'
-        and TO_DATE(IA.VALUE, 'MM/DD/YYYY') <= sysdate)
+        and IA.VALUE = 'No')
     select * from ALL_ITEMS minus
-    select * from DISCONTINUED intersect
-    select * from RELEASED)
+    select * from DISCONTINUED minus
+    select * from UNRELEASED)
