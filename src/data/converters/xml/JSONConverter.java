@@ -1,11 +1,17 @@
 package data.converters.xml;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
@@ -24,7 +30,22 @@ public abstract class JSONConverter {
 		catch(PathNotFoundException e){
 			//System.out.println("Missing path " + path + " in " + json.toString());
 		}
-		return null;
+		return StringUtils.EMPTY;
+	}
+	
+	static String getUTF8EncodedValue(JSONObject json, String path){
+		try {
+			String value = JsonPath.read(json.toString(), path);
+			if(StringUtils.isNotEmpty(value)){
+				byte[] b = value.getBytes("UTF-8");
+				String retVal = new String(b, "UTF-8");
+				return retVal;				
+			}
+		}
+		catch(PathNotFoundException | UnsupportedEncodingException e){
+			//System.out.println("Missing path " + path + " in " + json.toString());
+		}
+		return StringUtils.EMPTY;
 	}
 	
 	static List<JSONObject> getArrayValue(JSONObject json, String path){
