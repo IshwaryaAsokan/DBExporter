@@ -44,9 +44,9 @@ public class CouchWriter {
 		properties.setPort(5984);
 		properties.setProtocol("http");
 		properties.setDbName("products-" + biz.toString().toLowerCase());
-		properties.setCreateDbIfNotExist(true);
+		properties.setCreateDbIfNotExist(false);
 
-		dbClient = new CouchDbClient(properties);
+		setDbClient(new CouchDbClient(properties));
 	}
 	
 	public void writeToCouch(JSONObject data){
