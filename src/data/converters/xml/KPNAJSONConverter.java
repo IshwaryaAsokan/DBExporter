@@ -58,7 +58,7 @@ public class KPNAJSONConverter extends JSONConverter {
 				for(String bNumber : bulletNumbers){
 					String bKey = bTitle + bNumber;
 					String bullet = getUTF8EncodedValue(json, "$.adCopy." + bKey);
-					if(StringUtils.isNotBlank(bullet)){
+					if(StringUtils.isNotBlank(bullet) && bulletPoints.length() < 10){
 						bulletPoints.put(bullet);
 					}
 				}
