@@ -3,7 +3,7 @@ from CB02STRL.ITEM_INFO ii, CB02STRL.ITEM_ATTRIBUTES ia, CB02STRL.ATTRIBUTE_TYPE
 where II.ITEM_TYPE = 'I'
 and II.ITEM_INFO_ID = IA.ITEM_INFO_ID
 and IA.ATTRIBUTE_TYPE_ID = AT.ATTRIBUTE_TYPE_ID
-and AT.ATTRIBUTE_TYPE_ID in (31, 2007156, 6) --gets us (UPC_Code, JPG_Item_Image, Color_Finish_Name)
+and AT.ATTRIBUTE_TYPE_ID in (31, 2021901, 6) --gets us (UPC_Code, Scene7_Item_Image, Color_Finish_Name)
 and II.ITEM_NO in (
     WITH DISCONTINUED as
         (select ii1.item_no

@@ -50,7 +50,7 @@ public class STRLJSONConverter extends JSONConverter{
 				String color = getValue(sku, "$.Color_Finish_Name");
 				String upcCode = getValue(sku, "$.UPC_Code");
 
-				String jpg = getValue(sku, "$.JPG_Item_Image");
+				String jpg = getValue(sku, "$.Scene7_Item_Image");
 				if(jpg != null){
 					String jpgRoot = jpg.replace(".jpg", "");
 					product = putIfNotNull(product, "imageURL", wrapInCData(wrapInUrl(jpgRoot)));
