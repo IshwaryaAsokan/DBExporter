@@ -16,7 +16,9 @@ import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
+		runBuilder(Business.KPNA, OutputFormat.COUCHDB);
+//		CouchWriter writer = new CouchWriter(Business.KPNA);
+//		writer.writeToCouch();
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
