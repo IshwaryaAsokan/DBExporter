@@ -32,22 +32,7 @@ public abstract class JSONConverter {
 		}
 		return StringUtils.EMPTY;
 	}
-	
-	static String getUTF8EncodedValue(JSONObject json, String path){
-		try {
-			String value = JsonPath.read(json.toString(), path);
-			if(StringUtils.isNotEmpty(value)){
-				byte[] b = value.getBytes("UTF-8");
-				String retVal = new String(b, "UTF-8");
-				return retVal;				
-			}
-		}
-		catch(PathNotFoundException | UnsupportedEncodingException e){
-			//System.out.println("Missing path " + path + " in " + json.toString());
-		}
-		return StringUtils.EMPTY;
-	}
-	
+		
 	static List<JSONObject> getArrayValue(JSONObject json, String path){
 		try {
 			List<JSONObject> retVal = new ArrayList<JSONObject>();

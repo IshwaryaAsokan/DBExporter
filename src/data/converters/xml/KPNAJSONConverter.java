@@ -45,11 +45,11 @@ public class KPNAJSONConverter extends JSONConverter {
 		List<JSONObject> products = new ArrayList<JSONObject>();
 		
 		try {
-			String productId = getUTF8EncodedValue(json, "$.Item_No");
-			String productTitleDesc = getUTF8EncodedValue(json, "$.Description_Product");
-			String brandNameShowroom = getUTF8EncodedValue(json, "$.Brand_Name_Showroom");
-			String defaultCategory = getUTF8EncodedValue(json, "$.ATG_Default_Category");
-			String narrativeDesc = getUTF8EncodedValue(json, "$.adCopy.Narrative_Description");
+			String productId = getValue(json, "$.Item_No");
+			String productTitleDesc = getValue(json, "$.Description_Product");
+			String brandNameShowroom = getValue(json, "$.Brand_Name_Showroom");
+			String defaultCategory = getValue(json, "$.ATG_Default_Category");
+			String narrativeDesc = getValue(json, "$.adCopy.Narrative_Description");
 			
 			JSONArray bulletPoints = new JSONArray();
 			String[] bulletTitles = {"Web_Features_", "Web_Technology_", "Web_Material_", "Web_Installation_", "Web_Rebates_"}; 
@@ -57,8 +57,9 @@ public class KPNAJSONConverter extends JSONConverter {
 			for (String bTitle : bulletTitles){
 				for(String bNumber : bulletNumbers){
 					String bKey = bTitle + bNumber;
-					String bullet = getUTF8EncodedValue(json, "$.adCopy." + bKey);
-					if(StringUtils.isNotBlank(bullet) && bulletPoints.length() < 10){
+					String bullet = getValue(json, "$.adCopy." + bKey);
+					if(StringUtils.isNotBlank(bullet) && !bullet.contains("*") 
+							&& !bullet.contains("(sold separately)") && bulletPoints.length() < 10){
 						bulletPoints.put(bullet);
 					}
 				}
@@ -75,14 +76,14 @@ public class KPNAJSONConverter extends JSONConverter {
 				product.put("g:bullet_point", bulletPoints);
 				product.put("g:item_group_id", productId);
 				
-				String skuCode = "K-" + getUTF8EncodedValue(sku, "$.Item_No"); 
+				String skuCode = "K-" + getValue(sku, "$.Item_No"); 
 				product.put("g:id", skuCode);
 				product.put("g:mpn", skuCode);
 
-				product.put("g:suggested_retail_price", getUTF8EncodedValue(sku, "$.List_Price"));
-				String upcCode = getUTF8EncodedValue(sku, "$.UPC_Code");
+				product.put("g:suggested_retail_price", getValue(sku, "$.List_Price"));
+				String upcCode = getValue(sku, "$.UPC_Code");
 				
-				String colorFinish = getUTF8EncodedValue(sku, "$.Color_Finish_Name");
+				String colorFinish = getValue(sku, "$.Color_Finish_Name");
 				if(StringUtils.isNotEmpty(colorFinish) && !Arrays.asList(EXCLUDED_COLORS).contains(colorFinish)){
 						product.put("g:color", colorFinish);
 				}
@@ -90,7 +91,7 @@ public class KPNAJSONConverter extends JSONConverter {
 					colorFinish = StringUtils.EMPTY;
 				}
 
-				String imgItemIso = getUTF8EncodedValue(sku, "$.IMG_ITEM_ISO");
+				String imgItemIso = getValue(sku, "$.IMG_ITEM_ISO");
 				if(StringUtils.isNotEmpty(imgItemIso)){
 					String params = "$gradient_src=PAWEB%2Forganic-gradient&$product_src=is{PAWEB%2F" + imgItemIso + "}&wid=2800";
 					URI uri = new URI(
@@ -142,8 +143,7 @@ public class KPNAJSONConverter extends JSONConverter {
 		List<Pair<String, String>> replacements = new ArrayList<Pair<String, String>>();
 		replacements.add(Pair.of("<array>", "<item>"));
 		replacements.add(Pair.of("</array>", "</item>"));
-		replacements.add(Pair.of("&lt;", "<"));
-		replacements.add(Pair.of("&gt;", ">"));
+		//for Google XML, the following characters must be encoded: ' " < > &
 		return replacements;
 	}
 
