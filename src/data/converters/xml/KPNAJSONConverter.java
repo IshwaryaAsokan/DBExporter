@@ -17,6 +17,9 @@ public class KPNAJSONConverter extends JSONConverter {
 	
 	private final static String[] EXCLUDED_COLORS = {"Indicates No Finish", "Indicates No finish", "Not Applicable", "Not Applicable "};
 	private final static String EXCLUDED_BRAND = "no brand name";
+	private final static String SEPARATELY = "(sold separately)";
+	private final static String COORDINATES = "Coordinates with";
+	private final static String EXCLUSIVELY = "Available exclusively";
 
 	@Override
 	public JSONArray convert(JSONObject originalJson) {
@@ -59,7 +62,8 @@ public class KPNAJSONConverter extends JSONConverter {
 					String bKey = bTitle + bNumber;
 					String bullet = getValue(json, "$.adCopy." + bKey);
 					if(StringUtils.isNotBlank(bullet) && !bullet.contains("*") 
-							&& !bullet.contains("(sold separately)") && bulletPoints.length() < 10){
+							&& !bullet.contains(SEPARATELY) && !bullet.contains(COORDINATES)
+							&& !bullet.contains(EXCLUSIVELY) && bulletPoints.length() < 10){
 						bulletPoints.put(bullet);
 					}
 				}
@@ -69,30 +73,11 @@ public class KPNAJSONConverter extends JSONConverter {
 			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
 			for(JSONObject sku : skus){
 				JSONObject product = new JSONObject();
-				product.put("g:brand", "KOHLER");
-				product.put("g:product_line", removeTmAndR(brandNameShowroom));
-				product.put("g:product_type", defaultCategory); 
-				product.put("g:description", narrativeDesc);
-				product.put("g:bullet_point", bulletPoints);
-				product.put("g:item_group_id", productId);
-				
-				String skuCode = "K-" + getValue(sku, "$.Item_No"); 
-				product.put("g:id", skuCode);
-				product.put("g:mpn", skuCode);
-
-				product.put("g:suggested_retail_price", getValue(sku, "$.List_Price"));
-				String upcCode = getValue(sku, "$.UPC_Code");
-				
-				String colorFinish = getValue(sku, "$.Color_Finish_Name");
-				if(StringUtils.isNotEmpty(colorFinish) && !Arrays.asList(EXCLUDED_COLORS).contains(colorFinish)){
-						product.put("g:color", colorFinish);
-				}
-				else {
-					colorFinish = StringUtils.EMPTY;
-				}
-
 				String imgItemIso = getValue(sku, "$.IMG_ITEM_ISO");
-				if(StringUtils.isNotEmpty(imgItemIso)){
+				String upcCode = getValue(sku, "$.UPC_Code");
+				String skuCode = "K-" + getValue(sku, "$.Item_No"); 
+				
+				if(StringUtils.isNotEmpty(imgItemIso) && StringUtils.isNotEmpty(upcCode)){
 					String params = "$gradient_src=PAWEB%2Forganic-gradient&$product_src=is{PAWEB%2F" + imgItemIso + "}&wid=2800";
 					URI uri = new URI(
 						"http",
@@ -102,21 +87,42 @@ public class KPNAJSONConverter extends JSONConverter {
 						null
 					);
 					product.put("g:image_link", uri.toASCIIString());
-				}
-				
-				String productTitle = "KOHLER " + skuCode + " " + productTitleDesc;
-				if(StringUtils.isNotEmpty(colorFinish)){
-					productTitle = productTitle + " - " + colorFinish;
-				}
-				product.put("g:title", productTitle); //yes, but null color
-				
-				if(StringUtils.isNotEmpty(upcCode)){
+					product.put("g:brand", "KOHLER");
+					product.put("g:product_line", removeTmAndR(brandNameShowroom));
+					product.put("g:product_type", defaultCategory); 
+					product.put("g:description", narrativeDesc);
+					product.put("g:bullet_point", bulletPoints);
+					product.put("g:item_group_id", productId);
+					product.put("g:id", skuCode);
+					product.put("g:mpn", skuCode);
+					product.put("g:suggested_retail_price", getValue(sku, "$.List_Price"));					
+					
+					String colorFinish = getValue(sku, "$.Color_Finish_Name");
+					if(StringUtils.isNotEmpty(colorFinish) && !Arrays.asList(EXCLUDED_COLORS).contains(colorFinish)){
+							product.put("g:color", colorFinish);
+					}
+					else {
+						colorFinish = StringUtils.EMPTY;
+					}
+					
+					String productTitle = "KOHLER " + skuCode + " " + productTitleDesc;
+					if(StringUtils.isNotEmpty(colorFinish)){
+						productTitle = productTitle + " - " + colorFinish;
+					}
+
+					product.put("g:title", productTitle); //yes, but null color					
 					product.put("g:gtin", "00" + upcCode);
+					
 					products.add(product);
-				}
+				} //end: if(StringUtils.isNotEmpty(imgItemIso) && StringUtils.isNotEmpty(upcCode))
 				else {
-					System.out.println("No UPC Code for product: " + skuCode);
-				}				
+					if(StringUtils.isEmpty(upcCode)){
+						System.out.println("Missing UPC Code for product: " + skuCode);
+					}
+					if(StringUtils.isEmpty(imgItemIso)){
+						System.out.println("Missing Iamge ISO for product: " + skuCode);
+					}	
+				}
 			}
 		} catch (JSONException e) {
 			System.out.println("Error creating product.");

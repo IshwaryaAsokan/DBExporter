@@ -83,11 +83,13 @@ and II.ITEM_NO in
             where IG.ITEM_GROUP_ID = II1.ITEM_INFO_ID
             and IG.ITEM_INFO_ID = II2.ITEM_INFO_ID
             and II1.ITEM_INFO_ID in (
-                select II.ITEM_INFO_ID
-                from CB02KPNA.KEYWORD_PHRASES kp, CB02KPNA.ITEM_INFO ii
-                where (KP.PHRASE = 'Both'
-                or KP.PHRASE = 'US')
-                and KP.ITEM_INFO_ID = II.ITEM_INFO_ID)),
+	            select II.ITEM_INFO_ID
+	            from CB02KPNA.KEYWORD_PHRASES kp, CB02KPNA.ITEM_INFO ii, CB02KPNA.KEYWORD_TYPES kt
+	            where (KP.PHRASE = 'Both'
+	            or KP.PHRASE = 'US')
+	            and KP.ITEM_INFO_ID = II.ITEM_INFO_ID
+	            and KT.KEYWORD_TYPE_ID = 2174151 --market
+	            and KP.KEYWORD_TYPE_ID = KT.KEYWORD_TYPE_ID)),
         ALL_ITEMS as
             (select ii.item_no
             from CB02KPNA.ITEM_INFO ii
