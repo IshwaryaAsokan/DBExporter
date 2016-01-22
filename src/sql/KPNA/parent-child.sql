@@ -32,6 +32,7 @@ and II1.ITEM_NO in
             from CB02KPNA.ITEM_INFO ii1, CB02KPNA.ITEM_INFO ii2, CB02KPNA.ITEM_GROUPS ig
             where IG.ITEM_GROUP_ID = II1.ITEM_INFO_ID
             and IG.ITEM_INFO_ID = II2.ITEM_INFO_ID
+            and II2.ITEM_TYPE = 'I'
             and II1.ITEM_INFO_ID in (
                 select ii.item_info_id
                 from CB02KPNA.ITEM_INFO ii, cb02kpna.item_attributes ia, cb02kpna.attribute_types at
