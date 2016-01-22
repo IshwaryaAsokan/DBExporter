@@ -52,12 +52,13 @@ and II1.ITEM_NO in
             where IG.ITEM_GROUP_ID = II1.ITEM_INFO_ID
             and IG.ITEM_INFO_ID = II2.ITEM_INFO_ID
             and II1.ITEM_INFO_ID in (
-                select II.ITEM_INFO_ID
-                from CB02KPNA.ITEM_INFO ii, cb02kpna.item_attributes ia, cb02kpna.attribute_types at
-                where AT.ATTRIBUTE_TYPE_ID = IA.ATTRIBUTE_TYPE_ID
-                and II.ITEM_INFO_ID = IA.ITEM_INFO_ID
-                and AT.ATTRIBUTE_TYPE_ID = 2029206
-                and ia.value = 'Kohler Store')),
+	            select II.ITEM_INFO_ID
+	            from CB02KPNA.KEYWORD_PHRASES kp, CB02KPNA.ITEM_INFO ii, CB02KPNA.KEYWORD_TYPES kt
+	            where (KP.PHRASE = 'Both'
+	            or KP.PHRASE = 'US')
+	            and KP.ITEM_INFO_ID = II.ITEM_INFO_ID
+	            and KT.KEYWORD_TYPE_ID = 2174151 --market
+	            and KP.KEYWORD_TYPE_ID = KT.KEYWORD_TYPE_ID)),
         WEB_INCLUDED as
 		    (select II2.ITEM_NO --1=parent, 2=child
 		    from CB02KPNA.ITEM_INFO ii1, CB02KPNA.ITEM_GROUPS ig, CB02KPNA.ITEM_INFO ii2, CB02KPNA.ITEM_ATTRIBUTES ia
