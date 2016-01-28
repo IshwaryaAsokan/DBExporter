@@ -18,6 +18,8 @@ import definitions.enums.Business;
 public class CouchWriter {
 	private CouchDbProperties properties;
 	private CouchDbClient dbClient;
+	private final static String USERNAME = "system";
+	private final static String PASSWORD = "abc123";
 	
 	public void writeToCouch(){ //this example works - do not touch for now
 		CouchDbProperties properties = new CouchDbProperties();
@@ -45,6 +47,8 @@ public class CouchWriter {
 		properties.setProtocol("http");
 		properties.setDbName("products-" + biz.toString().toLowerCase());
 		properties.setCreateDbIfNotExist(false);
+		properties.setUsername(USERNAME);
+		properties.setPassword(PASSWORD);
 
 		setDbClient(new CouchDbClient(properties));
 	}
