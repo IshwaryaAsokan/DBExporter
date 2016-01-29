@@ -3,9 +3,13 @@ package driver;
 import io.CouchWriter;
 import io.ExcelOutputData;
 import io.OutputWriter;
+
+import java.util.Date;
 import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import data.converters.xml.ConverterService;
 import data.converters.xml.JSONConverter;
 import data.services.ExcelDataService;
@@ -16,9 +20,7 @@ import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.KPNA, OutputFormat.JSON);
-//		CouchWriter writer = new CouchWriter(Business.KPNA);
-//		writer.writeToCouch();
+		runBuilder(Business.KBRZ, OutputFormat.JSON);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
@@ -26,6 +28,9 @@ public class Driver {
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format, BusinessPurpose purpose){
+		Date now = new Date();
+		System.out.println("Start: " + now.toString());
+		
 		UnalteredJSONService getDataService = new UnalteredJSONService(business);
 		JSONObject populatedProductsJson = getDataService.getPopulatedJSON();
 						
@@ -56,6 +61,8 @@ public class Driver {
 			excelDataService.closeConnection();
 		}
 
+		now = new Date();
+		System.out.println("End: " + now.toString());
 		System.out.println("Done!");
 	}
 }
