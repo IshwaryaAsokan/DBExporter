@@ -36,6 +36,7 @@ public class ConnectionService {
 			System.out.println("Unable to find Oracle driver.");
 		} catch (SQLException e) {
 			System.out.println("Error creating connection.");
+			System.out.println(e.toString());
 		} catch (FileNotFoundException e) {
 			System.out.println("Connection properties file not found.");
 		} catch (IOException e) {
