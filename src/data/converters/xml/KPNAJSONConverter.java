@@ -50,7 +50,7 @@ public class KPNAJSONConverter extends JSONConverter {
 		try {
 			String productId = getValue(json, "$.Item_No");
 			String productTitleDesc = getValue(json, "$.Description_Product");
-			String brandNameShowroom = getValue(json, "$.Brand_Name_Showroom");
+			String brandNameShowroom = getValue(json, "$.Brand_Name");
 			String defaultCategory = getValue(json, "$.ATG_Default_Category");
 			String narrativeDesc = getValue(json, "$.adCopy.Narrative_Description");
 			
@@ -75,9 +75,10 @@ public class KPNAJSONConverter extends JSONConverter {
 				JSONObject product = new JSONObject();
 				String imgItemIso = getValue(sku, "$.IMG_ITEM_ISO");
 				String upcCode = getValue(sku, "$.UPC_Code");
-				String skuCode = "K-" + getValue(sku, "$.Item_No"); 
+				String skuCode = "K-" + getValue(sku, "$.Item_No");
+				String listPrice = getValue(sku, "$.List_Price");
 				
-				if(StringUtils.isNotEmpty(imgItemIso) && StringUtils.isNotEmpty(upcCode)){
+				if(StringUtils.isNotEmpty(imgItemIso) && StringUtils.isNotEmpty(upcCode) && StringUtils.isNotEmpty(listPrice)){
 					String params = "$gradient_src=PAWEB%2Forganic-gradient&$product_src=is{PAWEB%2F" + imgItemIso + "}&wid=2800";
 					URI uri = new URI(
 						"http",
@@ -95,7 +96,7 @@ public class KPNAJSONConverter extends JSONConverter {
 					product.put("g:item_group_id", productId);
 					product.put("g:id", skuCode);
 					product.put("g:mpn", skuCode);
-					product.put("g:suggested_retail_price", getValue(sku, "$.List_Price"));					
+					product.put("g:suggested_retail_price", listPrice);
 					
 					String colorFinish = getValue(sku, "$.Color_Finish_Name");
 					if(StringUtils.isNotEmpty(colorFinish) && !Arrays.asList(EXCLUDED_COLORS).contains(colorFinish)){
