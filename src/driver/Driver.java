@@ -20,7 +20,7 @@ import definitions.enums.OutputFormat;
 
 public class Driver {
 	public static void main(String args[]){
-		runBuilder(Business.KBRZ, OutputFormat.JSON);
+		runBuilder(Business.KALL, OutputFormat.JSON);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
