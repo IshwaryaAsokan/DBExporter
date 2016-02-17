@@ -1,0 +1,16 @@
+{
+  "name": "kohler-quickstart",
+  "version": "1.0.0",
+  "dependencies": {
+    "commitizen": "^2.5.0",
+    "cz-jira-smart-commit": "^1.0.3"
+  },
+  "devDependencies": {
+    "cz-jira-smart-commit": "^1.0.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-jira-smart-commit"
+    }
+  }
+}
