@@ -18,9 +18,10 @@ import definitions.enums.Business;
 import definitions.enums.BusinessPurpose;
 import definitions.enums.OutputFormat;
 
-public class Driver {
+public class LocalRunner {
 	public static void main(String args[]){
-		runBuilder(Business.KBRZ, OutputFormat.JSON);
+		//You can update the business used here to run the program locally.
+		runBuilder(Business.KALL, OutputFormat.JSON);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
