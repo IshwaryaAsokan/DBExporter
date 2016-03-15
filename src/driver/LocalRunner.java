@@ -21,7 +21,7 @@ import definitions.enums.OutputFormat;
 public class LocalRunner {
 	public static void main(String args[]){
 		//You can update the business used here to run the program locally.
-		runBuilder(Business.KALL, OutputFormat.JSON);
+		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
