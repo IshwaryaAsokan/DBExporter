@@ -61,9 +61,16 @@ public class KPNAJSONConverter extends JSONConverter {
 				for(String bNumber : bulletNumbers){
 					String bKey = bTitle + bNumber;
 					String bullet = getValue(json, "$.adCopy." + bKey);
-					if(StringUtils.isNotBlank(bullet) && !bullet.contains("*") 
-							&& !bullet.contains(SEPARATELY) && !bullet.contains(COORDINATES)
-							&& !bullet.contains(EXCLUSIVELY) && bulletPoints.length() < 10){
+					if(StringUtils.isNotBlank(bullet) 
+							&& !bullet.contains("*") 
+							&& !bullet.contains(SEPARATELY) 
+							&& !bullet.contains(COORDINATES)
+							&& !bullet.contains(EXCLUSIVELY) 
+							&& bulletPoints.length() < 10
+							&& !bullet.startsWith("Available at")
+							&& !bullet.startsWith("RETAIL AVAILABILITY")
+							&& !bullet.startsWith("Please contact your distributor")
+							&& StringUtils.countMatches(bullet, ".") < 2){
 						bulletPoints.put(bullet);
 					}
 				}
@@ -78,7 +85,8 @@ public class KPNAJSONConverter extends JSONConverter {
 				String skuCode = "K-" + getValue(sku, "$.Item_No");
 				String listPrice = getValue(sku, "$.List_Price");
 				
-				if(StringUtils.isNotEmpty(imgItemIso) && StringUtils.isNotEmpty(upcCode) && StringUtils.isNotEmpty(listPrice)){
+				if(StringUtils.isNotEmpty(imgItemIso) && StringUtils.isNotEmpty(upcCode) 
+						&& StringUtils.isNotEmpty(listPrice) && !listPrice.equalsIgnoreCase("Note *")){
 					String params = "$gradient_src=PAWEB%2Forganic-gradient&$product_src=is{PAWEB%2F" + imgItemIso + "}&wid=2800";
 					URI uri = new URI(
 						"http",
@@ -121,8 +129,14 @@ public class KPNAJSONConverter extends JSONConverter {
 						System.out.println("Missing UPC Code for product: " + skuCode);
 					}
 					if(StringUtils.isEmpty(imgItemIso)){
-						System.out.println("Missing Iamge ISO for product: " + skuCode);
-					}	
+						System.out.println("Missing Image ISO for product: " + skuCode);
+					}
+					if(StringUtils.isEmpty(listPrice)){
+						System.out.println("Missing List Price for product: " + skuCode);
+					}
+					if(listPrice.equalsIgnoreCase("Note *")){
+						System.out.println("List price of 'Note *' for product: " + skuCode);
+					}
 				}
 			}
 		} catch (JSONException e) {
