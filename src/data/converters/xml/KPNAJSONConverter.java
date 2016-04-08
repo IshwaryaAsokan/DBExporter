@@ -17,9 +17,19 @@ public class KPNAJSONConverter extends JSONConverter {
 	
 	private final static String[] EXCLUDED_COLORS = {"Indicates No Finish", "Indicates No finish", "Not Applicable", "Not Applicable "};
 	private final static String EXCLUDED_BRAND = "no brand name";
-	private final static String SEPARATELY = "(sold separately)";
-	private final static String COORDINATES = "Coordinates with";
-	private final static String EXCLUSIVELY = "Available exclusively";
+	private final static String[] EXCLUDED_BULLET_TEXT = 
+		{
+				"(sold separately)", 
+				"Coordinates with", 
+				"Available exclusively", 
+				"Available at",
+				"RETAIL AVAILABILITY",
+				"Please contact your distributor",
+				"*",
+				"AVAILABLE ONLY IN CANADA",
+				"Home Center availability...",
+				"Low flow aerator option..."
+		};
 
 	@Override
 	public JSONArray convert(JSONObject originalJson) {
@@ -62,14 +72,8 @@ public class KPNAJSONConverter extends JSONConverter {
 					String bKey = bTitle + bNumber;
 					String bullet = getValue(json, "$.adCopy." + bKey);
 					if(StringUtils.isNotBlank(bullet) 
-							&& !bullet.contains("*") 
-							&& !bullet.contains(SEPARATELY) 
-							&& !bullet.contains(COORDINATES)
-							&& !bullet.contains(EXCLUSIVELY) 
 							&& bulletPoints.length() < 10
-							&& !bullet.startsWith("Available at")
-							&& !bullet.startsWith("RETAIL AVAILABILITY")
-							&& !bullet.startsWith("Please contact your distributor")
+							&& !bulletContainsExcludedText(bullet)
 							&& StringUtils.countMatches(bullet, ".") < 2){
 						bulletPoints.put(bullet);
 					}
@@ -162,12 +166,26 @@ public class KPNAJSONConverter extends JSONConverter {
 	@Override
 	public List<Pair<String, String>> getReplacements() {
 		List<Pair<String, String>> replacements = new ArrayList<Pair<String, String>>();
+
 		replacements.add(Pair.of("<array>", "<item>"));
 		replacements.add(Pair.of("</array>", "</item>"));
 		//for Google XML, the following characters must be encoded: ' " < > &
+		replacements.add(Pair.of("é", "e"));
+		replacements.add(Pair.of("”", "\""));
+		replacements.add(Pair.of("ê", "e"));
+		replacements.add(Pair.of("®", ""));
+		replacements.add(Pair.of("™", "")); //trademark
+		replacements.add(Pair.of("°", " degrees "));
+		replacements.add(Pair.of("·", "'"));
+		replacements.add(Pair.of("&apos;", "'"));
+		replacements.add(Pair.of("–", "-"));
+		replacements.add(Pair.of("¿", ""));
+		replacements.add(Pair.of("ª", ""));
+		replacements.add(Pair.of("’", "'")); //fake apostrophes
+		
 		return replacements;
 	}
-
+	
 	private static String removeTmAndR(String text){
 		if(text == null || text.equalsIgnoreCase(EXCLUDED_BRAND)){
 			return StringUtils.EMPTY;
@@ -175,5 +193,15 @@ public class KPNAJSONConverter extends JSONConverter {
 		else {
 			return text.replace("(R)", "").replace("(TM)", "");	
 		}		
-	}	
+	}
+	
+	private static boolean bulletContainsExcludedText(String bullet){
+		for(String badText : EXCLUDED_BULLET_TEXT){
+			if(bullet.contains(badText)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }

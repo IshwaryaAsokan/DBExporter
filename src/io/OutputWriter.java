@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -68,7 +69,9 @@ public class OutputWriter {
 				for(Pair<String, String> replacement : converterService.getReplacements()){
 					outputValue = outputValue.replace(replacement.getLeft(), replacement.getRight());
 				}
-										
+				
+				outputValue = StringUtils.normalizeSpace(outputValue);
+				
 				outputValue = converterService.getStartXmlWrapper() + outputValue + converterService.getEndXmlWrapper();				
 				fileWriter.append(outputValue);
 			}
