@@ -17,7 +17,8 @@ import org.apache.commons.io.IOUtils;
 import definitions.enums.Business;
 
 public class SqlService {
-	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR", "MIRA", "KBRZ", "KALL"};
+	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR", 
+			"MIRA", "KBRZ", "KALL", "NDST", "ENGN"};
 	private final static String PUNI_ROOT = "parameterized/puni/";
 	
 	public String getSqlFile(String fileName, Business business){
