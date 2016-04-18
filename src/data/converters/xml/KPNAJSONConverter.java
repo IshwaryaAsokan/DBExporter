@@ -28,7 +28,8 @@ public class KPNAJSONConverter extends JSONConverter {
 				"*",
 				"AVAILABLE ONLY IN CANADA",
 				"Home Center availability...",
-				"Low flow aerator option..."
+				"Low flow aerator",
+				"Low-flow aerator"
 		};
 
 	@Override
