@@ -15,20 +15,38 @@ The file src/driver/LocalRunner.java is where the program is kicked off from. In
 runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
 
 ```
+* STRL Price Spider Feed: 
 
+```
+#!java
 
-* STRL Price Spider Feed: runBuilder(Business.STRL, OutputFormat.XML, BusinessPurpose.PRICE_SPIDER);
-* Dumping the data to a *local* CouchDB - this is currently used for EQ Specs: runBuilder(Business.MIRA, OutputFormat.COUCHDB);
-* To create tabbed spreadsheet creators. Simply update the program to reflect your need (runBuilder(Business.PORT, OutputFormat.XLSX);), then follow the directions in resources/how_to_add_jar.txt to create the jar. Jars should end up in: 
+runBuilder(Business.STRL, OutputFormat.XML, BusinessPurpose.PRICE_SPIDER);
+```
+* Dumping the data to a *local* CouchDB - this is currently used for EQ Specs:
+
+```
+#!java
+
+runBuilder(Business.MIRA, OutputFormat.COUCHDB);
+```
+* To create tabbed spreadsheet creators. Simply update the program to reflect your need, then follow the directions in resources/how_to_add_jar.txt to create the jar. Jars should end up in: 
 \\internetcomm\CPDB\Global\Applications\newschematabbedspreadsheetcreator\dist
+
+```
+#!java
+
+runBuilder(Business.PORT, OutputFormat.XLSX);
+```
 
 ### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+Adding a new PUNI business to the builder is straightforward. You can view this [previous commit](https://bitbucket.org/kohler_source/db-exporter/commits/6cc71dfcab009b56fd39cbe2cb184e9f99ef44e9), but the steps are:
+
+* Add the database connection information [connection.properties]
+* Add the business to the Business enum [Business.java]
+* Add the business to the list of standard businesses in STANDARD_PUNI_BUSINESSES [SqlService.java]
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* Kohler Internet Operations Team
+* @zachary-telschow 
