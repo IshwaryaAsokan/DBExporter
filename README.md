@@ -15,7 +15,7 @@ The file src/driver/LocalRunner.java is where the program is kicked off from. In
 runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.GOOGLE_XML_SHOPPING);
 
 ```
-* STRL Price Spider Feed - [instructions for upload](https://basecamp.com/2912566/projects/10383996/messages/51828599): 
+* STRL Price Spider Feed (products) - [instructions for upload](https://basecamp.com/2912566/projects/10383996/messages/51828599): 
 
 ```
 #!java
