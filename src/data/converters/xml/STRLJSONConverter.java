@@ -3,6 +3,8 @@ package data.converters.xml;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +39,10 @@ public class STRLJSONConverter extends JSONConverter{
 			String defaultCategory = getValue(json, "$.ATG_Default_Category");
 			String shortDescription = getValue(json, "$.Description_Thumbnail");
 			String model = getValue(json, "$.Item_No");
+			
+			if(StringUtils.isEmpty(shortDescription)){
+				System.out.println("Missing short description for: " + model);
+			}
 								
 			List<JSONObject> skus = getArrayValue(json, "$.[skus]");
 			for(JSONObject sku : skus){
