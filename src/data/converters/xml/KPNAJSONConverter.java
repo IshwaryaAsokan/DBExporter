@@ -139,7 +139,7 @@ public class KPNAJSONConverter extends JSONConverter {
 					if(StringUtils.isEmpty(listPrice)){
 						System.out.println("Missing List Price for product: " + skuCode);
 					}
-					if(listPrice.equalsIgnoreCase("Note *")){
+					else if(listPrice.equalsIgnoreCase("Note *")){
 						System.out.println("List price of 'Note *' for product: " + skuCode);
 					}
 				}
