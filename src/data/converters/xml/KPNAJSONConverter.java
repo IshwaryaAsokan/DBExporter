@@ -27,9 +27,11 @@ public class KPNAJSONConverter extends JSONConverter {
 				"Please contact your distributor",
 				"*",
 				"AVAILABLE ONLY IN CANADA",
-				"Home Center availability...",
+				"Home Center availability",
 				"Low flow aerator",
-				"Low-flow aerator"
+				"Low-flow aerator",
+				"The Oil-Rubbed Bronze finish on this product does not include copper highlights as shown.",
+				"Mounting bracket (shown above) sold separately and available in four finishes."
 		};
 
 	@Override
