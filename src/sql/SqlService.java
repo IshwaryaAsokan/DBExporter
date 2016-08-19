@@ -32,7 +32,7 @@ public class SqlService {
 			return sql;
 		}
 		else if(Arrays.asList(STANDARD_PCEN_BUSINESSES).contains(business.toString())){
-			String fileLocation = PUNI_ROOT + fileName;
+			String fileLocation = PCEN_ROOT + fileName;
 			String sql = getSqlFile(fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 			return sql;			
