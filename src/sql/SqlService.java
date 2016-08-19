@@ -21,12 +21,21 @@ public class SqlService {
 			"MIRA", "KBRZ", "KALL", "NDST", "ENGN", "INDA", "RESI"};
 	private final static String PUNI_ROOT = "parameterized/puni/";
 	
+	private final static String[] STANDARD_PCEN_BUSINESSES = {};
+	private final static String PCEN_ROOT = "parameterized/pcen/";
+	
 	public String getSqlFile(String fileName, Business business){
 		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
 			String fileLocation = PUNI_ROOT + fileName;
 			String sql = getSqlFile(fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 			return sql;
+		}
+		else if(Arrays.asList(STANDARD_PCEN_BUSINESSES).contains(business.toString())){
+			String fileLocation = PUNI_ROOT + fileName;
+			String sql = getSqlFile(fileLocation);
+			sql = sql.replace("{{business}}", business.toString());
+			return sql;			
 		}
 		else {
 			String fileLocation = business.toString() + "/" + fileName;
