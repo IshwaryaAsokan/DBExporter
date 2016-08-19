@@ -1,11 +1,8 @@
 package sql;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +18,7 @@ public class SqlService {
 			"MIRA", "KBRZ", "KALL", "NDST", "ENGN", "INDA", "RESI"};
 	private final static String PUNI_ROOT = "parameterized/puni/";
 	
-	private final static String[] STANDARD_PCEN_BUSINESSES = {};
+	private final static String[] STANDARD_PCEN_BUSINESSES = {"BAKR"};
 	private final static String PCEN_ROOT = "parameterized/pcen/";
 	
 	public String getSqlFile(String fileName, Business business){
