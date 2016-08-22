@@ -33,6 +33,10 @@ public class KPNAJSONConverter extends JSONConverter {
 				"The Oil-Rubbed Bronze finish on this product does not include copper highlights as shown.",
 				"Mounting bracket (shown above) sold separately and available in four finishes."
 		};
+	private final static String[] EXCLUDED_BULLET_START_TEXT = 
+		{
+				"Oil-Rubbed Bronze finish"
+		};
 
 	@Override
 	public JSONArray convert(JSONObject originalJson) {
@@ -202,6 +206,12 @@ public class KPNAJSONConverter extends JSONConverter {
 		for(String badText : EXCLUDED_BULLET_TEXT){
 			if(bullet.contains(badText)){
 				return true;
+			}
+		}
+		
+		for(String badStartText : EXCLUDED_BULLET_START_TEXT){
+			if(bullet.startsWith(badStartText)){
+				return true;				
 			}
 		}
 		
