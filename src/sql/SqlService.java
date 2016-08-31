@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import definitions.enums.Business;
 
@@ -21,7 +22,7 @@ public class SqlService {
 	private final static String[] STANDARD_PCEN_BUSINESSES = {"BAKR"};
 	private final static String PCEN_ROOT = "parameterized/pcen/";
 	
-	public String getSqlFile(String fileName, Business business){
+	public String getSqlFile(String fileName, Business business, String sqlPath){
 		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
 			String fileLocation = PUNI_ROOT + fileName;
 			String sql = getSqlFile(fileLocation);
@@ -35,7 +36,7 @@ public class SqlService {
 			return sql;			
 		}
 		else {
-			String fileLocation = business.toString() + "/" + fileName;
+			String fileLocation = StringUtils.isNotEmpty(sqlPath) ? sqlPath + "/" + fileName : business.toString() + "/" + fileName;
 			return getSqlFile(fileLocation);
 		}			
 	}
@@ -54,8 +55,8 @@ public class SqlService {
 		return null;
 	}
 	
-	public ResultSet getResults(Connection connection, String fileName, Business business){
-		String sql = getSqlFile(fileName, business);
+	public ResultSet getResults(Connection connection, String fileName, Business business, String sqlPath){
+		String sql = getSqlFile(fileName, business, sqlPath);
 		return executeQuery(connection, sql);
 	}
 	
