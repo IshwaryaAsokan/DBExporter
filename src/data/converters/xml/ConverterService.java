@@ -11,7 +11,10 @@ public class ConverterService {
 		else if(business == Business.KPNA && purpose == BusinessPurpose.GOOGLE_XML_SHOPPING){
 			return new KPNAJSONConverter();
 		}
-		
+		else if(business == Business.KPNA && purpose == BusinessPurpose.OLAPIC_XML){
+			return new KPNAJSONConverterForOlapic();
+		}
+
 		System.out.println("No converter found for business " + business.toString() + ".");
 		
 		return null;
