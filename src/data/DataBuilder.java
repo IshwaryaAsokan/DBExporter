@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import definitions.enums.Business;
+import definitions.enums.BusinessPurpose;
 import sql.SqlService;
 
 public class DataBuilder {
-	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business, SqlService sqlService){
-		ResultSet rs = sqlService.getResults(connection, fileName, business);
+	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business, SqlService sqlService, BusinessPurpose purpose){
+		ResultSet rs = sqlService.getResults(connection, fileName, business, purpose);
 		return getAttributeTypes(rs);
 	}
 	

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 
 import definitions.enums.Business;
+import definitions.enums.BusinessPurpose;
 
 public class SqlService {
 	private final static String[] STANDARD_PUNI_BUSINESSES = {"PORT", "ANNS", "NKUK", "NBKR", 
@@ -23,20 +24,22 @@ public class SqlService {
 	private final static String PCEN_ROOT = "parameterized/pcen/";
 	private final static String OLAPIC_PCEN_ROOT = "olapic/pcen/";
 	
-	public String getSqlFile(String fileName, Business business){
+	public String getSqlFile(String fileName, Business business, BusinessPurpose purpose){
 		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
 			String fileLocation = PUNI_ROOT + fileName;
+			System.out.println(fileLocation);
 			String sql = getSqlFile(fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 			return sql;
 		}
 		else if(Arrays.asList(STANDARD_PCEN_BUSINESSES).contains(business.toString())){
 			String fileLocation = PCEN_ROOT + fileName;
+			System.out.println(fileLocation);
 			String sql = getSqlFile(fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 			return sql;			
 		}
-		else if(Arrays.asList(OLAPIC_PCEN_BUSINESSES).contains(business.toString())){
+		else if(Arrays.asList(OLAPIC_PCEN_BUSINESSES).contains(business.toString()) && purpose.equals(BusinessPurpose.OLAPIC_XML)){
 			String fileLocation = OLAPIC_PCEN_ROOT + fileName;
 			System.out.println(fileLocation);
 			String sql = getSqlFile(fileLocation);
@@ -64,10 +67,10 @@ public class SqlService {
 		return null;
 	}
 	
-	public ResultSet getResults(Connection connection, String fileName, Business business){
-		String sql = getSqlFile(fileName, business);
+	public ResultSet getResults(Connection connection, String fileName, Business business, BusinessPurpose purpose){
+		String sql = getSqlFile(fileName, business, purpose);
 		return executeQuery(connection, sql);
-	}
+	}	
 	
 	public ResultSet getResults(Connection connection, String fileLocation){
 		String sql = getSqlFile(fileLocation);

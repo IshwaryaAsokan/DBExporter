@@ -3,7 +3,6 @@ package data.converters.xml;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,29 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class KPNAJSONConverterForOlapic extends JSONConverter{
-	private final static String[] EXCLUDED_COLORS = {"Indicates No Finish", "Indicates No finish", "Not Applicable", "Not Applicable "};
-	private final static String EXCLUDED_BRAND = "no brand name";
-	private final static String[] EXCLUDED_BULLET_TEXT = 
-		{
-				"(sold separately)", 
-				"Coordinates with", 
-				"Available exclusively", 
-				"Available at",
-				"RETAIL AVAILABILITY",
-				"Please contact your distributor",
-				"*",
-				"AVAILABLE ONLY IN CANADA",
-				"Home Center availability",
-				"Low flow aerator",
-				"Low-flow aerator",
-				"The Oil-Rubbed Bronze finish on this product does not include copper highlights as shown.",
-				"Mounting bracket (shown above) sold separately and available in four finishes."
-		};
-	private final static String[] EXCLUDED_BULLET_START_TEXT = 
-		{
-				"Oil-Rubbed Bronze finish"
-		};
-
+	
 	@Override
 	public JSONArray convert(JSONObject originalJson) {
 		JSONArray transformedJson = new JSONArray();
@@ -87,12 +64,11 @@ public class KPNAJSONConverterForOlapic extends JSONConverter{
 					null
 				);
 				
-				String Imgparams = imageUrl + "?$s7product$";
 				URI Imguri = new URI(
 					"http",
 					"s7d4.scene7.com",
-					"/is/image/PAWEB/",
-					Imgparams,
+					"/is/image/PAWEB/"+imageUrl+"?$s7product$",
+					null,
 					null
 				);
 				product.put("Name", productName);

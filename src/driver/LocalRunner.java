@@ -21,7 +21,7 @@ import definitions.enums.OutputFormat;
 public class LocalRunner {
 	public static void main(String args[]){
 		//You can update the business used here to run the program locally.
-		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.OLAPIC_XML);
+		runBuilder(Business.STRL, OutputFormat.XML, BusinessPurpose.PRICE_SPIDER);
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format){
@@ -32,7 +32,7 @@ public class LocalRunner {
 		Date now = new Date();
 		System.out.println("Start: " + now.toString());
 		
-		UnalteredJSONService getDataService = new UnalteredJSONService(business);
+		UnalteredJSONService getDataService = new UnalteredJSONService(business,purpose);
 		JSONObject populatedProductsJson = getDataService.getPopulatedJSON();
 		System.out.println("populatedProductsJson: " + populatedProductsJson.toString());				
 		if(format == OutputFormat.JSON || format == OutputFormat.XML || format == OutputFormat.COUCHDB){
