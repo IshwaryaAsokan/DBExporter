@@ -7,6 +7,7 @@ import io.OutputWriter;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,18 +22,27 @@ import definitions.enums.OutputFormat;
 public class LocalRunner {
 	public static void main(String args[]){
 		//You can update the business used here to run the program locally.
+
 		runBuilder(Business.KPNA, OutputFormat.XML, BusinessPurpose.OLAPIC_XML);
-	}
-	
-	private static void runBuilder(Business business, OutputFormat format){
-		runBuilder(business, format, null);
+		//runBuilder(Business.KPNA, OutputFormat.COUCHDB, "KPNA_full");
+
 	}
 	
 	private static void runBuilder(Business business, OutputFormat format, BusinessPurpose purpose){
+		runBuilder(business, format, purpose, StringUtils.EMPTY);
+	}
+	
+	private static void runBuilder(Business business, OutputFormat format, String sqlRoot){
+		runBuilder(business, format, null, sqlRoot);
+	}
+	
+	private static void runBuilder(Business business, OutputFormat format, BusinessPurpose purpose, String sqlRoot){
 		Date now = new Date();
 		System.out.println("Start: " + now.toString());
 		
-		UnalteredJSONService getDataService = new UnalteredJSONService(business,purpose);
+
+		UnalteredJSONService getDataService = new UnalteredJSONService(business,sqlRoot,purpose);
+
 		JSONObject populatedProductsJson = getDataService.getPopulatedJSON();
 						
 		if(format == OutputFormat.JSON || format == OutputFormat.XML || format == OutputFormat.COUCHDB){
@@ -52,7 +62,7 @@ public class LocalRunner {
 			
 		}
 		else{ //xls
-			ExcelDataService excelDataService = new ExcelDataService(business, format);
+			ExcelDataService excelDataService = new ExcelDataService(business, format, sqlRoot);
 			
 			excelDataService.populateAttributeTypesLists();			
 			excelDataService.populateHeaders();

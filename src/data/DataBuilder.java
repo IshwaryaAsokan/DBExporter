@@ -11,8 +11,9 @@ import definitions.enums.BusinessPurpose;
 import sql.SqlService;
 
 public class DataBuilder {
-	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business, SqlService sqlService, BusinessPurpose purpose){
-		ResultSet rs = sqlService.getResults(connection, fileName, business, purpose);
+	public static List<String> getAttributeTypes(Connection connection, String fileName, Business business, SqlService sqlService, String sqlRoot, BusinessPurpose purpose){
+		ResultSet rs = sqlService.getResults(connection, fileName, business, sqlRoot, purpose);
+
 		return getAttributeTypes(rs);
 	}
 	

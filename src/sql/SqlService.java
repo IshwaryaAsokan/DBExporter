@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import definitions.enums.Business;
 import definitions.enums.BusinessPurpose;
@@ -24,8 +25,10 @@ public class SqlService {
 	private final static String PCEN_ROOT = "parameterized/pcen/";
 	private final static String OLAPIC_PCEN_ROOT = "olapic/pcen/";
 	
-	public String getSqlFile(String fileName, Business business, BusinessPurpose purpose){
-		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
+
+	public String getSqlFile(String fileName, Business business, String sqlPath, BusinessPurpose purpose){
+
+			if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
 			String fileLocation = PUNI_ROOT + fileName;
 			
 			String sql = getSqlFile(fileLocation);
@@ -43,7 +46,9 @@ public class SqlService {
 			String fileLocation = OLAPIC_PCEN_ROOT + fileName;
 			
 			String sql = getSqlFile(fileLocation);
-			if(!(null==sql)){
+			//if(!(null==sql)){
+			if(StringUtils.isNotEmpty(sql)){
+				System.out.println("fileLocation:"+fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 				return sql;
 			}else{
@@ -53,8 +58,9 @@ public class SqlService {
 			
 		}
 		else {
-			String fileLocation = business.toString() + "/" + fileName;
 			
+			String fileLocation = StringUtils.isNotEmpty(sqlPath) ? sqlPath + "/" + fileName : business.toString() + "/" + fileName;
+			System.out.println(fileLocation);
 			return getSqlFile(fileLocation);
 		}			
 	}
@@ -73,9 +79,11 @@ public class SqlService {
 		return null;
 	}
 	
-	public ResultSet getResults(Connection connection, String fileName, Business business, BusinessPurpose purpose){
-		String sql = getSqlFile(fileName, business, purpose);
-		return executeQuery(connection, sql);
+
+	public ResultSet getResults(Connection connection, String fileName, Business business, String sqlPath, BusinessPurpose purpose){
+		String sql = getSqlFile(fileName, business,sqlPath, purpose);
+
+			return executeQuery(connection, sql);
 	}	
 	
 	public ResultSet getResults(Connection connection, String fileLocation){

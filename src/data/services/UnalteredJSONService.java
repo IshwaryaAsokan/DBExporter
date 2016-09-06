@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONObject;
 import connection.ConnectionService;
@@ -18,30 +20,42 @@ public class UnalteredJSONService {
 	private Connection connection;
 	private SqlService sqlService;
 	private BusinessPurpose purpose;
-	
-	public UnalteredJSONService(Business business,BusinessPurpose purpose){
+	private String sqlRoot;
+	public UnalteredJSONService(Business business,String sqlRoot,BusinessPurpose purpose){
+
 		setBusiness(business);
 		ConnectionService connectionService = new ConnectionService(business);
 		setConnection(connectionService.getConnection());
 		setPurpose(purpose);
 		setSqlService(new SqlService());
+		setSqlRoot(StringUtils.EMPTY);
 	}
 	
 	
 	public JSONObject getPopulatedJSON(){
-		JSONObject productsJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "all-product-attributes.sql", getBusiness(), getPurpose()));
+
+		JSONObject productsJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "all-product-attributes.sql", getBusiness(), getSqlRoot(), getPurpose()));
+
 		System.out.println("JSON populated: products");
-		JSONObject itemsJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "all-item-attributes.sql", getBusiness(), getPurpose()));
+
+		JSONObject itemsJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "all-item-attributes.sql", getBusiness(), getSqlRoot(), getPurpose()));
+
 		System.out.println("JSON populated: items");
-		JSONObject adCopyJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "ad-copy.sql", getBusiness(), getPurpose()));
+
+		JSONObject adCopyJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "ad-copy.sql", getBusiness(),getSqlRoot(), getPurpose()));
+
 		System.out.println("JSON populated: ad-copy");
-		JSONObject crossSellingJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "cross-selling.sql", getBusiness(), getPurpose()));
+
+		JSONObject crossSellingJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "cross-selling.sql", getBusiness(), getSqlRoot(), getPurpose()));
+
 		System.out.println("JSON populated: cross selling");
-		JSONObject keywordsJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "keywords.sql", getBusiness(), getPurpose()));
+
+		JSONObject keywordsJson = JSONObjectBuilder.buildItemInfo(getSqlService().getResults(getConnection(), "keywords.sql", getBusiness(), getSqlRoot(), getPurpose()));
+
 		System.out.println("JSON populated: keywords");
 		
-		Map<String,String> mappings = JSONObjectBuilder.mapItemsToProducts(getSqlService().getResults(getConnection(), "parent-child.sql", getBusiness(), getPurpose()));
-		
+		Map<String,String> mappings = JSONObjectBuilder.mapItemsToProducts(getSqlService().getResults(getConnection(), "parent-child.sql", getBusiness(), getSqlRoot(), getPurpose()));
+
 		List<Triple<String,JSONObject,Boolean>> children = new ArrayList<Triple<String,JSONObject,Boolean>>();
 		children.add(Triple.of("skus", itemsJson, Boolean.TRUE));
 		children.add(Triple.of("adCopy", adCopyJson, Boolean.FALSE));
@@ -86,5 +100,11 @@ public class UnalteredJSONService {
 			System.out.println("Failed to close DB connection [UnalteredJSONService].");
 			e.printStackTrace();
 		}
+	}
+	public String getSqlRoot() {
+		return sqlRoot;
+	}
+	public void setSqlRoot(String sqlRoot) {
+		this.sqlRoot = sqlRoot;
 	}
 }

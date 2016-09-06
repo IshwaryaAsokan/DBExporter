@@ -31,6 +31,9 @@ public class ExcelDataService {
 	private Connection connection;
 	private SqlService sqlService;
 	private BusinessPurpose purpose;
+
+	private String sqlRoot;
+
 	
 	private List<String> productAttrsList;
 	private List<String> itemAttrsList;
@@ -44,7 +47,7 @@ public class ExcelDataService {
 	private List<String> keywordHeaders;
 	private List<String> crossSellingHeaders;
 
-	public ExcelDataService(Business business, OutputFormat format){
+	public ExcelDataService(Business business, OutputFormat format, String sqlRoot){
 		setBusiness(business);
 		setFormat(format);
 		setPurpose(purpose);
@@ -54,11 +57,12 @@ public class ExcelDataService {
 	}
 	
 	public void populateAttributeTypesLists(){
-		setProductAttrsList(DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business, getSqlService(), getPurpose()));
-		setItemAttrsList(DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business, getSqlService(), getPurpose()));
-		setAdCopyAttrsList(DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business, getSqlService(), getPurpose()));
-		setKeywordAttrsList(DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business, getSqlService(), getPurpose()));
-		setCrossSellingAttrsList(DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business, getSqlService(), getPurpose()));
+
+		setProductAttrsList(DataBuilder.getAttributeTypes(connection, "all-product-attribute-types.sql", business, getSqlService(), getSqlRoot(), getPurpose()));
+		setItemAttrsList(DataBuilder.getAttributeTypes(connection, "all-item-attribute-types.sql", business, getSqlService(), getSqlRoot(), getPurpose()));
+		setAdCopyAttrsList(DataBuilder.getAttributeTypes(connection, "ad-copy-types.sql", business, getSqlService(), getSqlRoot(), getPurpose()));
+		setKeywordAttrsList(DataBuilder.getAttributeTypes(connection, "keyword-types.sql", business, getSqlService(), getSqlRoot(), getPurpose()));
+		setCrossSellingAttrsList(DataBuilder.getAttributeTypes(connection, "cross-selling-types.sql", business, getSqlService(), getSqlRoot(), getPurpose()));
 		System.out.println("Attribute types defined");
 	}
 	
@@ -205,11 +209,20 @@ public class ExcelDataService {
 	public void setCrossSellingHeaders(List<String> crossSellingHeaders) {
 		this.crossSellingHeaders = crossSellingHeaders;
 	}
+
 	public BusinessPurpose getPurpose() {
 		return purpose;
 	}
 	public void setPurpose(BusinessPurpose purpose) {
 		this.purpose = purpose;
+	}
+
+
+	public String getSqlRoot() {
+		return sqlRoot;
+	}
+	public void setSqlRoot(String sqlRoot) {
+		this.sqlRoot = sqlRoot;
 	}
 
 }

@@ -41,8 +41,7 @@ public class OlapicConverter extends JSONConverter{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("transformedJson:"+transformedJson);
-		
+				
 		return transformedJson;
 	}
 	
