@@ -20,7 +20,6 @@ import definitions.enums.BusinessPurpose;
 import definitions.enums.OutputFormat;
 
 public class LocalRunner {
-	//this comment fixes the issue!
 	public static void main(String args[]){
 		//You can update the business used here to run the program locally.
 		runBuilder(Business.KPNA, OutputFormat.COUCHDB, "KPNA_full");
