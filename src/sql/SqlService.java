@@ -27,28 +27,34 @@ public class SqlService {
 	public String getSqlFile(String fileName, Business business, BusinessPurpose purpose){
 		if(Arrays.asList(STANDARD_PUNI_BUSINESSES).contains(business.toString())){
 			String fileLocation = PUNI_ROOT + fileName;
-			System.out.println(fileLocation);
+			
 			String sql = getSqlFile(fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 			return sql;
 		}
 		else if(Arrays.asList(STANDARD_PCEN_BUSINESSES).contains(business.toString())){
 			String fileLocation = PCEN_ROOT + fileName;
-			System.out.println(fileLocation);
+			
 			String sql = getSqlFile(fileLocation);
 			sql = sql.replace("{{business}}", business.toString());
 			return sql;			
 		}
-		else if(Arrays.asList(OLAPIC_PCEN_BUSINESSES).contains(business.toString()) && purpose.equals(BusinessPurpose.OLAPIC_XML)){
+		else if(Arrays.asList(OLAPIC_PCEN_BUSINESSES).contains(business.toString()) && purpose == BusinessPurpose.OLAPIC_XML){
 			String fileLocation = OLAPIC_PCEN_ROOT + fileName;
-			System.out.println(fileLocation);
+			
 			String sql = getSqlFile(fileLocation);
+			if(!(null==sql)){
 			sql = sql.replace("{{business}}", business.toString());
-			return sql;			
+				return sql;
+			}else{
+				
+				return null;
+			}
+			
 		}
 		else {
 			String fileLocation = business.toString() + "/" + fileName;
-			System.out.println(fileLocation);
+			
 			return getSqlFile(fileLocation);
 		}			
 	}

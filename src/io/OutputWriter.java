@@ -57,6 +57,9 @@ public class OutputWriter {
 	
 	public static void writeResult(JSONArray obj, Business business, OutputFormat format, BusinessPurpose purpose){
 		String fileDestination = FILE_LOCATION_ROOT + business.toString() + "." + format.toString();
+		if(purpose == BusinessPurpose.OLAPIC_XML){
+			fileDestination = FILE_LOCATION_ROOT + business.toString() +"_"+ purpose.toString() +"." + format.toString();
+		}
 		FileWriter fileWriter = null;
 		
 		try {

@@ -12,7 +12,7 @@ public class ConverterService {
 			return new KPNAJSONConverter();
 		}
 		else if(business == Business.KPNA && purpose == BusinessPurpose.OLAPIC_XML){
-			return new KPNAJSONConverterForOlapic();
+			return new OlapicConverter();
 		}
 
 		System.out.println("No converter found for business " + business.toString() + ".");
